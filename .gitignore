@@ -218,3 +218,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Dữ liệu thô của dự án Airbnb
+data/raw/
