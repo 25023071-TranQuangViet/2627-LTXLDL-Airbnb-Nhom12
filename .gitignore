@@ -220,4 +220,4 @@ __marimo__/
 .streamlit/secrets.toml
 
 # Dữ liệu thô và đã xử lý của dự án Airbnb
-data/
+data/raw
