@@ -3,7 +3,6 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
-config_path = "configs/London.yaml"
 
 def download_data(config_path):
     with Path(config_path).open("r", encoding="utf-8") as f:
@@ -21,6 +20,3 @@ def download_data(config_path):
                 r = requests.get(url)
                 r.raise_for_status()
                 file_path.write_bytes(r.content)
-
-if __name__ == "__main__":
-    download_data(config_path)
