@@ -221,3 +221,6 @@ __marimo__/
 
 # Dữ liệu thô và đã xử lý của dự án Airbnb
 data/raw
+
+#notebook test
+test.ipynb
