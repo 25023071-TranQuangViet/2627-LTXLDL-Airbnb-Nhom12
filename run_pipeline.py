@@ -2,10 +2,8 @@ import argparse
 from pathlib import Path
 from src.download import download_data
 
-
 def run_pipeline(config_path):
     download_data(config_path)
-    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
