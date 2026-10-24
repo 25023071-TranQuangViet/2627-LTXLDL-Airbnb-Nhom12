@@ -2,6 +2,8 @@ import pandas as pd
 from pathlib import Path
 import requests
 import yaml
+import re
+import json
 
 
 def cleaning_data(config_path):
@@ -10,7 +12,7 @@ def cleaning_data(config_path):
         for date in config["snapshots"]:
                 #xu ly listing 
                 listing_path = Path(f"data/raw/{date}/listings.csv.gz")
-                listing = pd.read_csv(listing_path, compression= "gzip", dtype = {"id": "str"})
+                listing = pd.read_csv(listing_path, compression= "gzip", dtype = {"id": "str", "host_id": "str"})
                 listing_loc = pd.read_csv(Path("data/processed/listings-loc.csv"), dtype = {"listing_id": "str"}, usecols = ["listing_id", "analysis_area"])
                 vung_loc = pd.read_csv(Path("data/processed/vung-loc.csv"))
                 for i in ["lon_min", "lat_min", "lon_max", "lat_max"]:
@@ -21,6 +23,7 @@ def cleaning_data(config_path):
                 ls_ghep["first_review"] = pd.to_datetime(ls_ghep["first_review"], format = '%Y-%m-%d')
                 ls_ghep["last_review"] = pd.to_datetime(ls_ghep["last_review"], format = '%Y-%m-%d')
                 ls_ghep["last_scraped"] = pd.to_datetime(ls_ghep["last_scraped"], format = '%Y-%m-%d')
+                ls_ghep["bathrooms"] = ls_ghep["bathrooms_text"].str.extract(r"^(\d+\.?\d*)\s*(?:shared|private)?\s*(?:baths?|bathrooms?)", flags = re.I, expand = False)
                 #xu ly tiep listing
                 
                 #xu ly review
