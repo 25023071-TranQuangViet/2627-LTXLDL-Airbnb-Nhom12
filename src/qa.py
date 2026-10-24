@@ -13,11 +13,14 @@ def cleaning_data(config_path):
                 listing = pd.read_csv(listing_path, compression= "gzip", dtype = {"id": "str"})
                 listing_loc = pd.read_csv(Path("data/processed/listings-loc.csv"), dtype = {"listing_id": "str"}, usecols = ["listing_id", "analysis_area"])
                 vung_loc = pd.read_csv(Path("data/processed/vung-loc.csv"))
-                vung_loc["lon_min"] = pd.to_numeric(vung_loc["lon_min"].str.replace(",", ".", regex = False))
-                vung_loc["lat_min"] = pd.to_numeric(vung_loc["lat_min"].str.replace(",", ".", regex = False))
-                vung_loc["lon_max"] = pd.to_numeric(vung_loc["lon_max"].str.replace(",", ".", regex = False))
-                vung_loc["lat_max"] = pd.to_numeric(vung_loc["lat_max"].str.replace(",", ".", regex = False))
+                for i in ["lon_min", "lat_min", "lon_max", "lat_max"]:
+                        vung_loc[f"{i}"] = pd.to_numeric(vung_loc[f"{i}"].str.replace(",", ".", regex = False))
                 ls_ghep = listing.merge(listing_loc, left_on = "id", right_on = "listing_id", how = "right").merge(vung_loc, on = "analysis_area", how = "left")
+                ls_ghep["price"] = ls_ghep["price"].str.replace("$", "", regex = False).str.replace(",", "", regex = False)
+                ls_ghep["price_num"] = pd.to_numeric(ls_ghep["price"])
+                ls_ghep["first_review"] = pd.to_datetime(ls_ghep["first_review"], format = '%Y-%m-%d')
+                ls_ghep["last_review"] = pd.to_datetime(ls_ghep["last_review"], format = '%Y-%m-%d')
+                ls_ghep["last_scraped"] = pd.to_datetime(ls_ghep["last_scraped"], format = '%Y-%m-%d')
                 #xu ly tiep listing
                 
                 #xu ly review
