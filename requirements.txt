@@ -15,3 +15,4 @@ scikit-learn==1.9.1
 google-genai==2.33.0
 
 # Đây là bản rút gọn nhất có thể để chạy dc hết các module, nếu mn cần thêm thì có thể tự install là dc
+# Các dependencies sẽ tự cài theo
