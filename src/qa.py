@@ -30,7 +30,7 @@ def cleaning_data(config_path):
                 #xu ly review
                 review_path = Path(f"data/raw/{date}/reviews.csv.gz")
                 reviews = pd.read_csv(review_path, compression= "gzip", dtype = {"listing_id": "str", "id": "str", "reviewer_id": "str"}, parse_dates = ["date"])
-                review_loc = pd.read_csv(Path("data/processed/reviews-loc.csv"), usecols = ["listing_id", "review_id"], dtype = {"listing_id": "str", "review_id": "str"})
+                review_loc = pd.read_csv(Path("data/processed/reviews-loc.csv"),  dtype = {"listing_id": "str", "review_id": "str"})
                 review_ghep = reviews.merge(review_loc, left_on = "id", right_on = "review_id", how = "right")
                 #xu ly tiep review
                 
