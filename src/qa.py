@@ -9,14 +9,15 @@ import json
 def cleaning_data(config_path):
         with Path(config_path).open("r", encoding="utf-8") as f:
                 config = yaml.safe_load(f)
+        listing_loc = pd.read_csv(Path("data/processed/listings-loc.csv"), dtype = {"listing_id": "str"}, usecols = ["listing_id", "analysis_area"])
+        vung_loc = pd.read_csv(Path("data/processed/vung-loc.csv"))
+        for i in ["lon_min", "lat_min", "lon_max", "lat_max"]:
+                vung_loc[f"{i}"] = pd.to_numeric(vung_loc[f"{i}"].str.replace(",", ".", regex = False))
+        review_loc = pd.read_csv(Path("data/processed/reviews-loc.csv"), usecols = ["listing_id", "review_id"], dtype = {"listing_id": "str", "review_id": "str"})
         for date in config["snapshots"]:
                 #xu ly listing 
                 listing_path = Path(f"data/raw/{date}/listings.csv.gz")
                 listing = pd.read_csv(listing_path, compression= "gzip", dtype = {"id": "str", "host_id": "str"})
-                listing_loc = pd.read_csv(Path("data/processed/listings-loc.csv"), dtype = {"listing_id": "str"}, usecols = ["listing_id", "analysis_area"])
-                vung_loc = pd.read_csv(Path("data/processed/vung-loc.csv"))
-                for i in ["lon_min", "lat_min", "lon_max", "lat_max"]:
-                        vung_loc[f"{i}"] = pd.to_numeric(vung_loc[f"{i}"].str.replace(",", ".", regex = False))
                 ls_ghep = listing.merge(listing_loc, left_on = "id", right_on = "listing_id", how = "right").merge(vung_loc, on = "analysis_area", how = "left")
                 ls_ghep["price"] = ls_ghep["price"].str.replace("$", "", regex = False).str.replace(",", "", regex = False)
                 ls_ghep["price_num"] = pd.to_numeric(ls_ghep["price"])
