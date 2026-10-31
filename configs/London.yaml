@@ -1,6 +1,23 @@
 city: London
 data_root: united-kingdom/england/london
+currency: GBP
 snapshots: [2025-09-14, 2025-12-13, 2026-03-21, 2026-06-19]
+
 qa:
+  price_max_gbp: 5000
   min_nights_cap: 365
-  dedupe_keys: [id, last_scraped]
+  room_types: ["Entire home/apt", "Private room"]
+  dedupe_keys: ["id", "last_scraped"]
+
+expected:
+  listings: 1000
+  calendar: 365000
+  reviews: 5000
+  entire_home: 875
+  private_room: 125
+  no_review: [50, 30, 25, 25]
+  missing_price_last: 20
+  area_min: 120
+  area_max: 130
+  llm_sample: 1000
+  hand_label: 100
