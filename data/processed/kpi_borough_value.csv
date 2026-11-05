@@ -1,0 +1,34 @@
+snapshot,neighbourhood_cleansed,n_listing,n_valid_ppp,n_valid_value,ppp_median,ppp_p25,ppp_p75,ppp_ci_95_low,ppp_ci_95_high,value_mean,value_ci_95_low,value_ci_95_high,value_median,price_confident,value_confident,reliable,good_value_status
+2026-06-19,Westminster,123,119,99,85.96,64.27,120.5,77.0,96.0,4.604,4.554,4.652,4.67,False,False,True,Không đạt
+2026-06-19,Kensington and Chelsea,86,84,68,86.9,64.9,130.69,77.31,97.7,4.616,4.565,4.664,4.64,False,False,True,Không đạt
+2026-06-19,Camden,82,80,64,81.59,58.85,116.45,76.58,91.0,4.553,4.473,4.628,4.64,False,False,True,Không đạt
+2026-06-19,Tower Hamlets,73,72,61,61.94,41.05,90.53,55.16,73.81,4.616,4.543,4.685,4.66,False,False,True,Không đạt
+2026-06-19,Southwark,65,63,57,53.17,42.94,72.25,48.83,59.19,4.639,4.577,4.695,4.67,False,False,True,Không đạt
+2026-06-19,Wandsworth,61,60,42,67.81,51.23,92.48,58.56,81.0,4.735,4.667,4.798,4.79,False,False,True,Không đạt
+2026-06-19,Hackney,48,48,41,61.75,46.14,86.97,49.45,75.28,4.702,4.628,4.766,4.77,False,False,True,Đạt (Sát ngưỡng)
+2026-06-19,Hammersmith and Fulham,47,44,39,64.05,53.21,89.69,56.88,80.38,4.614,4.521,4.7,4.65,False,False,True,Không đạt
+2026-06-19,Islington,46,45,43,71.25,54.35,92.0,60.56,84.5,4.667,4.615,4.718,4.67,False,False,True,Không đạt
+2026-06-19,Lambeth,42,41,31,56.84,42.43,73.0,45.5,65.93,4.671,4.581,4.748,4.7,False,False,True,Đạt (Sát ngưỡng)
+2026-06-19,Brent,37,35,28,60.25,44.34,75.25,46.8,69.12,4.6,4.492,4.698,4.67,False,False,True,Không đạt
+2026-06-19,Barnet,28,28,23,50.0,35.87,63.12,39.0,57.41,4.586,4.473,4.691,4.55,False,False,True,Không đạt
+2026-06-19,Waltham Forest,23,23,15,47.0,28.75,58.84,30.0,55.62,4.763,4.673,4.847,4.82,True,True,True,Đạt (Chắc chắn)
+2026-06-19,Croydon,22,22,17,42.07,33.44,59.49,35.0,57.09,4.627,4.495,4.749,4.74,False,False,True,Không đạt
+2026-06-19,Ealing,22,22,19,49.74,40.73,68.0,41.56,60.0,4.626,4.483,4.758,4.77,False,False,True,Không đạt
+2026-06-19,Haringey,21,20,16,60.96,49.69,79.0,51.75,75.33,4.781,4.709,4.851,4.76,False,True,True,Đạt (Sát ngưỡng)
+2026-06-19,Merton,20,20,18,56.4,37.81,78.94,39.34,74.72,4.821,4.733,4.891,4.86,False,True,True,Đạt (Sát ngưỡng)
+2026-06-19,Greenwich,19,19,12,48.67,38.66,59.06,39.0,56.68,4.823,4.779,4.868,4.83,True,True,True,Đạt (Chắc chắn)
+2026-06-19,Newham,19,19,16,45.38,29.2,52.61,29.5,52.2,4.739,4.613,4.831,4.78,True,False,True,Đạt (Sát ngưỡng)
+2026-06-19,Lewisham,17,17,14,37.33,33.95,50.66,33.95,50.66,4.579,4.338,4.765,4.79,False,False,True,Không đạt
+2026-06-19,Hounslow,13,13,10,56.25,38.25,81.67,38.25,81.67,4.729,4.6,4.85,4.79,False,False,True,Đạt (Sát ngưỡng)
+2026-06-19,Richmond upon Thames,12,12,9,83.63,61.75,92.41,55.5,93.12,4.686,4.532,4.832,4.75,False,False,False,Không đạt
+2026-06-19,Havering,11,11,6,44.5,37.42,47.5,36.67,48.0,4.67,4.52,4.8,4.7,False,False,False,Không đạt
+2026-06-19,Bexley,8,8,8,34.0,29.98,41.74,27.5,46.33,4.705,4.601,4.803,4.72,False,False,False,Không đạt
+2026-06-19,Bromley,8,8,5,46.72,26.44,54.81,23.3,55.33,4.904,4.83,4.978,4.91,False,False,False,Không đạt
+2026-06-19,City of London,8,7,7,71.0,60.41,112.5,53.83,135.0,4.401,4.234,4.565,4.38,False,False,False,Không đạt
+2026-06-19,Enfield,8,8,7,34.66,33.08,48.57,32.33,52.69,4.581,4.434,4.746,4.56,False,False,False,Không đạt
+2026-06-19,Kingston upon Thames,8,8,6,53.19,44.81,61.98,37.75,63.4,4.725,4.573,4.875,4.62,False,False,False,Không đạt
+2026-06-19,Redbridge,8,8,6,30.12,24.5,39.5,23.0,47.0,4.603,4.458,4.75,4.65,False,False,False,Không đạt
+2026-06-19,Barking and Dagenham,4,4,4,33.75,27.83,43.75,16.83,67.0,4.518,4.397,4.702,4.44,False,False,False,Không đạt
+2026-06-19,Harrow,4,4,3,48.62,44.56,56.36,41.0,70.96,4.62,4.29,4.8,4.77,False,False,False,Không đạt
+2026-06-19,Hillingdon,4,3,2,60.77,42.89,65.64,25.0,70.5,4.55,,,4.55,False,False,False,Không đạt
+2026-06-19,Sutton,3,3,1,94.67,63.73,110.13,32.78,125.6,4.84,,,4.84,False,False,False,Không đạt
