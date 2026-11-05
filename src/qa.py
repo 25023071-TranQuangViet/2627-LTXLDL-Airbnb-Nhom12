@@ -37,9 +37,9 @@ def kiem_cau_truc(d: pd.DataFrame, cot_can: set, cot_so: set, moc: str = "") -> 
 def check_input(config_path, root = PROJECT_PATH) -> None:
         with Path(config_path).open("r", encoding="utf-8") as f:
                 config = yaml.safe_load(f)
-        snapshots = config["snapshots"]
+        snapshot = config["snapshots"]
         loai_bang = ["listings", "calendar", "reviews"]
-        for date in snapshots:
+        for date in snapshot:
                 for bang in loai_bang:
                         path_file = root / "data" / "raw" / f"{date}" / f"{bang}.csv.gz"
                         if not path_file.exists():
@@ -76,13 +76,37 @@ def extract_bathrooms_from_text(text_series: pd.Series) -> pd.Series:
         res[nua_bath] = "0.5"
         return pd.to_numeric(res, errors = "coerce")
 
+def parse_amenities_features(amenities_series: pd.Series) -> pd.DataFrame:
+        """Trích xuất số lượng tiện ích, cờ có Wifi và cờ có Bếp (Kitchen) từ chuỗi JSON."""
+        counts, wifi, kitchen = [], [], []
+        for val in amenities_series:
+                if pd.isna(val):
+                        counts.append(0)
+                        wifi.append(False)
+                        kitchen.append(False)
+                        continue
+                try:
+                        items = json.loads(str(val))
+                        if not isinstance(items, list):
+                                items = []
+                except Exception:
+                        items = []
+                counts.append(len(items))
+                lower_items = [str(x).lower() for x in items]
+                wifi.append(any("wifi" in x or "wi-fi" in x for x in lower_items))
+                kitchen.append(any("kitchen" in x for x in lower_items))
 
+        return pd.DataFrame({
+                "amenities_count": counts,
+                "has_wifi": wifi,
+                "has_kitchen": kitchen,
+        }, index=amenities_series.index)
 
 def process_listings(config_path, root = PROJECT_PATH):
         with Path(config_path).open("r", encoding="utf-8") as f:
                 config = yaml.safe_load(f)
-        snapshots = config["snapshots"]
-        last_snap = snapshots[-1]
+        snapshot = config["snapshots"]
+        last_snap = snapshot[-1]
         proc_dir = root / "data" / "processed"
         proc_dir.mkdir(parents=True, exist_ok=True)
         listing_loc = pd.read_csv(
@@ -96,7 +120,7 @@ def process_listings(config_path, root = PROJECT_PATH):
                 vung_loc[col] = pd.to_numeric(vung_loc[col].astype(str).str.replace(",", ".", regex=False), errors="coerce")
         
         frames = []
-        for date in snapshots:
+        for date in snapshot:
                 listing_path = root / "data" / "raw" / f"{date}" / "listings.csv.gz"
                 listing_raw = pd.read_csv(listing_path,
                             compression = "gzip",
@@ -145,6 +169,11 @@ def process_listings(config_path, root = PROJECT_PATH):
                 else:
                         listings["has_availability_clean"] = np.nan
         listings["last_scraped"] = pd.to_datetime(listings["last_scraped"], format = "%Y-%m-%d")
+        
+        amen_listings = parse_amenities_features(listings["amenities"])
+        listings["amenities_count"] = amen_listings["amenities_count"]
+        listings["has_wifi"] = amen_listings["has_wifi"]
+        listings["has_kitchen"] = amen_listings["has_kitchen"]
         
 # gan co du lieu khuyet thieu
         listings["flag_missing_price_last"] = (listings["snapshot"] == last_snap) & listings["price_clean"].isna()
@@ -338,10 +367,22 @@ def process_listings(config_path, root = PROJECT_PATH):
         combined_out = proc_dir / "listings_cleaned.csv"
         listings.to_csv(combined_out, index=False, encoding="utf-8")
         
-        for date in snapshots:
+        for date in snapshot:
                 snap_dir = proc_dir / str(date)
                 snap_dir.mkdir(parents=True, exist_ok=True)
-                listing_snap = listings.loc[listings["snapshots"] == date]
+                listing_snap = listings.loc[listings["snapshot"] == date]
                 listing_snap.to_csv(snap_dir / "listing_cleaned.csv", index=False, encoding="utf-8")
                 
-        return listings, qa_report_listings
+        return qa_report_listings
+
+
+def run_qa(config_path, root = PROJECT_PATH):
+        check_input(config_path, root)
+        print("Cau truc dau vao da OKK")
+        
+        reports = [process_listings(config_path, root)]
+        qa_report = pd.concat(reports, ignore_index=True)
+        report_path = root / "reports"
+        report_path.mkdir(parents = True, exist_ok = True)
+        qa_report.to_csv(report_path / "qa_report.csv", index=False, encoding="utf-8-sig")
+        return qa_report
