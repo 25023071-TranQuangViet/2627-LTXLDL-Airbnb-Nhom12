@@ -195,9 +195,6 @@ def process_listings(config_path: str | Path, root: Path = ROOT) -> tuple[pd.Dat
         & df["latitude"].between(df["lat_min"], df["lat_max"])
     )
 
-    valid_for_ppp = present & (df["snapshot"] == last_snap) & (~df["flag_missing_price_last"]) & (~df["flag_outlier_price"]) & (df["accommodates"] > 0)
-    df["price_per_person"] = np.where(valid_for_ppp, (df["price_clean"] / df["accommodates"]).round(2), np.nan)
-
     dup_in_snap = present & df.duplicated(subset=["snapshot", "id"], keep="first")
     dup_across_snap = present & df.duplicated(subset=["id", "last_scraped"], keep="first")
     df["flag_duplicate"] = dup_in_snap | dup_across_snap
