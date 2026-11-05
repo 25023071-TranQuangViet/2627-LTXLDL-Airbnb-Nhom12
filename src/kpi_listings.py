@@ -1,6 +1,6 @@
 """Mô-đun tính toán các chỉ số KPI cho bảng listings (Nhóm C - London).
 
-Chạy độc lập (hỗ trợ cả python src/kpi_listings.py và python -m src.kpi_listings):
+Chạy độc lập:
     python src/kpi_listings.py --config configs/London.yaml
 """
 from __future__ import annotations
@@ -71,7 +71,14 @@ def compute_borough_kpis(df: pd.DataFrame, last_snap: str, borough_map: pd.Serie
     df_q1 = df[(df["snapshot"] == last_snap) & (~df["flag_missing_listing"])].copy()
     df_q1["borough"] = df_q1["id"].map(borough_map)
 
-    # SỬA B4 & B5: Nhật ký loại bỏ & Cảnh báo Duplicate
+    # 1. BỐC TỪ QA SANG: Tự tính giá trên đầu người tại tầng KPI
+    # Dùng np.where để tránh lỗi chia cho 0 khi accommodates rỗng hoặc = 0
+    df_q1["price_per_person"] = np.where(
+        df_q1["accommodates"] > 0,
+        (df_q1["price_clean"] / df_q1["accommodates"]).round(2),
+        np.nan
+    )
+
     n_last = len(df_q1)
     n_dup = df_q1["flag_duplicate"].sum()
     if n_last > 0 and (n_dup / n_last) > 0.05:
@@ -79,17 +86,24 @@ def compute_borough_kpis(df: pd.DataFrame, last_snap: str, borough_map: pd.Serie
 
     df_q1 = df_q1.dropna(subset=["borough"])
 
-    # Ghi chú B3: K1 dùng price_per_person (từ price_clean, không điền khuyết); không dùng bedrooms_clean/beds_clean
-    k1_mask = (~df_q1["flag_duplicate"]) & (df_q1["price_per_person"].notna()) & (df_q1["price_per_person"] > 0)
+    # 2. CẬP NHẬT BỘ LỌC K1: Tự loại trừ các cờ lỗi giá từ QA 
+    k1_mask = (
+        (~df_q1["flag_duplicate"]) 
+        & (~df_q1["flag_missing_price_last"]) 
+        & (~df_q1["flag_outlier_price"]) 
+        & (df_q1["price_per_person"].notna()) 
+        & (df_q1["price_per_person"] > 0)
+    )
     
-    # SỬA B2: Ít phụ thuộc cờ, đọc trực tiếp cột thật
     k2_mask = (~df_q1["flag_duplicate"]) & (df_q1["review_scores_value"].notna()) & (df_q1["number_of_reviews"] >= min_reviews)
 
+    # Cập nhật nhật ký loại bỏ (log) để theo dõi các cờ QA
     exclusion_log = pd.DataFrame([{
         "snapshot": last_snap,
         "total_present": n_last,
         "excluded_duplicate": n_dup,
-        "excluded_missing_price": df_q1["price_per_person"].isna().sum(),
+        "excluded_missing_price_last": df_q1["flag_missing_price_last"].sum(),
+        "excluded_outlier_price": df_q1["flag_outlier_price"].sum(),
         "excluded_missing_value": df_q1["review_scores_value"].isna().sum(),
         "excluded_under_min_reviews": (df_q1["number_of_reviews"] < min_reviews).sum()
     }])
@@ -164,7 +178,6 @@ def compute_time_kpis(df: pd.DataFrame, snapshots: list[str], proc_dir: Path) ->
     for snap in snapshots:
         snap_df = df_valid[df_valid["snapshot"] == snap]
         
-        # SỬA B2: Đọc trực tiếp number_of_reviews == 0
         n_all = len(snap_df)
         n_no_rev_all = int((snap_df["number_of_reviews"] == 0).sum())
         pct_no_rev_all = round((n_no_rev_all / n_all * 100), 2) if n_all > 0 else np.nan
@@ -212,7 +225,6 @@ def build_definitions(currency: str, min_reviews: int, rep_dir: Path) -> pd.Data
 def calculate_listings_kpis(config_path: str | Path, root: Path = ROOT) -> dict[str, pd.DataFrame]:
     cfg = yaml.safe_load(Path(config_path).read_text(encoding="utf-8"))
     
-    # SỬA B6: Ép kiểu chuỗi trước khi gán
     snapshots = [str(d) for d in cfg["snapshots"]]
     last_snap = max(snapshots)
     currency = cfg.get("currency", "GBP")
@@ -230,14 +242,17 @@ def calculate_listings_kpis(config_path: str | Path, root: Path = ROOT) -> dict[
 
     df = pd.read_csv(cleaned_file, dtype={"id": str}, low_memory=False)
     
-    # SỬA B1: Kiểm tra hợp đồng đầu vào
-    req_cols = ['snapshot', 'id', 'neighbourhood_cleansed', 'analysis_area', 'room_type', 'price_per_person', 'number_of_reviews', 'review_scores_rating', 'review_scores_value', 'flag_duplicate']
+    # 3. ĐỔI LẠI HỢP ĐỒNG ĐẦU VÀO: Bỏ price_per_person, yêu cầu price_clean và các cờ outlier
+    req_cols = [
+        'snapshot', 'id', 'neighbourhood_cleansed', 'analysis_area', 'room_type', 
+        'price_clean', 'accommodates', 'flag_missing_price_last', 'flag_outlier_price',
+        'number_of_reviews', 'review_scores_rating', 'review_scores_value', 'flag_duplicate'
+    ]
     missing = [c for c in req_cols if c not in df.columns]
     if missing: raise ValueError(f"Thiếu cột bắt buộc từ QA: {missing}")
 
     df["snapshot"] = df["snapshot"].astype(str)
     
-    # SỬA B2: Dự phòng tạo cờ thiếu listing nếu QA cũ chưa chạy
     df["flag_missing_listing"] = df.get("flag_missing_listing", df["id"].isna())
 
     df_listing_borough, borough_map = build_listing_borough(df, last_snap, proc_dir)
