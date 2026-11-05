@@ -217,7 +217,7 @@ def process_listings(config_path, root = PROJECT_PATH):
         & ((listings["price_clean"] <= 0) | (listings["price_clean"] > config["qa"]["price_max_gbp"]))
         )
         
-        listings["flag_outlier_min_nights"] = (listings["minimum_nights"].notna()
+        listings["flag_outlier_min_nights"] = (
         | (listings["minimum_nights"] <= 0)
         | (listings["minimum_nights"] > config["qa"]["min_nights_cap"])
         )
