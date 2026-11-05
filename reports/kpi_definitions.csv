@@ -1,7 +1,7 @@
 kpi_id,kpi_name,target,formula,unit,currency,stakeholder
-K1,Giá trung vị trên mỗi khách theo borough,Xác định chi phí lưu trú thực tế tại mốc cuối,median(price_clean / accommodates),GBP/khách/đêm,GBP,Khách du lịch (Nhóm C)
-K2,Điểm độ đáng tiền (Value) trung bình,Đo lường mức độ hài lòng về chất lượng nhận lại (Lọc listing có >= 5 đánh giá),mean(review_scores_value) với number_of_reviews >= 5,thang điểm 0–5,n/a,Khách du lịch (Nhóm C)
+K1,Giá trung vị trên mỗi khách theo borough,Xác định chi phí lưu trú,median(price_clean / accommodates),GBP/khách/đêm,GBP,Khách du lịch (Nhóm C)
+K2,Điểm độ đáng tiền (Value) trung bình,Đo lường mức độ hài lòng,mean(review_scores_value) với number_of_reviews >= 5,thang điểm 0–5,n/a,Khách du lịch (Nhóm C)
 K3,Quận có giá tốt và độ hài lòng cao,"Phân loại quận Đạt (Chắc chắn) khi cả 2 khoảng tin cậy vượt ngưỡng, ngược lại Đạt (Sát ngưỡng)",Đạt: (ppp_median <= City_Median_PPP) AND (value_mean >= City_Mean_Value); Chắc chắn: thêm (ppp_ci_high <= City_Median_PPP) AND (value_ci_low >= City_Mean_Value),phân loại chữ,n/a,Khách du lịch (Nhóm C)
-K4,Biến động điểm và tỷ lệ chưa có review,Theo dõi chất lượng dịch vụ và nguồn cung mới,mean(review_scores_rating) và (reviews==0 / listings * 100),điểm và %,n/a,Khách du lịch
+K4,Biến động điểm và tỷ lệ chưa có review,Theo dõi chất lượng,mean(review_scores_rating) và (reviews==0 / listings * 100),điểm và %,n/a,Khách du lịch
 K5,Độ sẵn sàng phòng theo mùa,Phân tích chu kỳ mùa vụ,Chờ module Calendar tích hợp,tỷ lệ %,n/a,Khách du lịch (Nhóm C)
 K6,Tỷ lệ phàn nàn độ ồn/an ninh,Cảnh báo quận rủi ro,Chờ module LLM tích hợp,tỷ lệ %,n/a,Khách du lịch (Nhóm C)

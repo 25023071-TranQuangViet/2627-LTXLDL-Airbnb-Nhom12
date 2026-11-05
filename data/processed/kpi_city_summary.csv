@@ -1,2 +1,2 @@
 snapshot,metric_scope,city_ppp_median,city_value_mean,notes
-2026-06-19,City Threshold,63.0,4.645,"Ngưỡng tính trên các listing hợp lệ (đã loại bỏ outlier và missing). n_ppp=978, n_value=797."
+2026-06-19,City Threshold,63.0,4.645,"n_ppp=978, n_value=797."
