@@ -105,7 +105,7 @@ def process_listings(config_path, root = PROJECT_PATH):
                             low_memory=False,
                         )
                 listing_merged = listing_raw.merge(listing_loc, left_on = "id", right_on = "listing_id", how = "right").merge(vung_loc, on = "analysis_area", how = "left")
-                listing_merged["snapshot"] = date
+                listing_merged["snapshots"] = date
                 frames.append(listing_merged)
         listings = pd.concat(frames, ignore_index=True)
         
@@ -116,7 +116,7 @@ def process_listings(config_path, root = PROJECT_PATH):
         )
         listings["price_raw_num"] = clean_price_series(listings["price"])
         #loc ra price cua moc cuoi vi chi dung price moc cuoi
-        listings["price_clean"] = listings.loc[listings["snapshot"] == last_snap, "price_raw_num"]
+        listings["price_clean"] = listings.loc[listings["snapshots"] == last_snap, "price_raw_num"]
         
         bath_num = pd.to_numeric(listings["bathrooms"], errors="coerce")
         bath_from_text = extract_bathrooms_from_text(listings["bathrooms_text"])
@@ -147,7 +147,7 @@ def process_listings(config_path, root = PROJECT_PATH):
         listings["last_scraped"] = pd.to_datetime(listings["last_scraped"], format = "%Y-%m-%d")
         
 # gan co du lieu khuyet thieu
-        listings["flag_missing_price_last"] = (listings["snapshot"] == last_snap) & listings["price_clean"].isna()
+        listings["flag_missing_price_last"] = (listings["snapshots"] == last_snap) & listings["price_clean"].isna()
         listings["flag_no_reviews"] = (listings["number_of_reviews"] == 0)
         listings["flag_missing_scores"] = (listings["number_of_reviews"].isna()
         | listings["review_scores_rating"].isna()
@@ -156,7 +156,7 @@ def process_listings(config_path, root = PROJECT_PATH):
         listings["flag_missing_bed"] = (listings["bedrooms"].isna() | listings["beds"].isna())
         listings["flag_missing_bath"] = (listings["bathrooms_clean"].isna())
 # fillna
-        mask_last = listings["snapshot"] == last_snap
+        mask_last = listings["snapshots"] == last_snap
         listings["price_clean_fillna"] = np.nan
         listings.loc[mask_last, "price_clean_fillna"] = (
                 listings[mask_last].groupby(["room_type", "accommodates"])["price_clean"]
@@ -208,7 +208,7 @@ def process_listings(config_path, root = PROJECT_PATH):
         listings["flag_category_mismatch"] = room_type_changed
         
         
-        last_listings = listings[listings["snapshot"] == last_snap]
+        last_listings = listings[listings["snapshots"] == last_snap]
         
         qa_ls_rules = [
                 quy_tac("listings",
