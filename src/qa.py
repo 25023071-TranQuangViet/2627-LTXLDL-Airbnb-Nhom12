@@ -217,8 +217,7 @@ def process_listings(config_path, root = PROJECT_PATH):
         & ((listings["price_clean"] <= 0) | (listings["price_clean"] > config["qa"]["price_max_gbp"]))
         )
         
-        listings["flag_outlier_min_nights"] = (
-        | (listings["minimum_nights"] <= 0)
+        listings["flag_outlier_min_nights"] = ((listings["minimum_nights"] <= 0)
         | (listings["minimum_nights"] > config["qa"]["min_nights_cap"])
         )
         listings["flag_out_of_bounds"] = ~(listings["longitude"].between(listings["lon_min"], listings["lon_max"])
@@ -375,12 +374,155 @@ def process_listings(config_path, root = PROJECT_PATH):
                 
         return qa_report_listings
 
+def process_calendar(config_path, root=PROJECT_PATH):
+
+    with Path(config_path).open("r", encoding="utf-8") as f:
+        config = yaml.safe_load(f)
+        
+    snapshot = config["snapshots"]
+    proc_dir = root / "data" / "processed"
+    proc_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Đọc danh sách ID phân công từ listings-loc.csv
+    listing_loc = pd.read_csv(
+        proc_dir / "listings-loc.csv", 
+        dtype={"listing_id": str}, 
+        usecols=["listing_id"]
+    )
+    
+    use_cols = ['listing_id', 'date', 'available', 'minimum_nights', 'maximum_nights']
+    chunk_size = 500_000
+    
+    all_snapshot_dfs = []
+
+    # 1. Đọc và lọc từng mốc theo Chunk
+    for date_snap in snapshot:
+        calendar_path = root / "data" / "raw" / str(date_snap) / "calendar.csv.gz"
+        if not calendar_path.exists():
+            continue
+            
+        chunks_for_snap = []
+        for chunk in pd.read_csv(calendar_path, compression='gzip', dtype={'listing_id': 'str'}, usecols=use_cols, chunksize=chunk_size):
+            # Merge lọc theo đúng listing_id của nhóm
+            chunk_ghep = chunk.merge(listing_loc, on='listing_id', how='inner').copy()
+            if not chunk_ghep.empty:
+                chunks_for_snap.append(chunk_ghep)
+                
+        if chunks_for_snap:
+            snap_df = pd.concat(chunks_for_snap, ignore_index=True)
+            snap_df["snapshot"] = date_snap
+            all_snapshot_dfs.append(snap_df)
+
+    if not all_snapshot_dfs:
+        raise ValueError("Không tìm thấy dữ liệu calendar hợp lệ ở các mốc!")
+
+    # 2. Concat toàn bộ thành 1 DataFrame tổng
+    calendar = pd.concat(all_snapshot_dfs, ignore_index=True)
+
+    # 3. Ép kiểu dữ liệu và làm sạch
+    calendar["available"] = calendar["available"].astype(str).str.lower().map({'t': True, 'f': False})
+    calendar['date'] = pd.to_datetime(calendar['date'], format='%Y-%m-%d', errors="coerce")
+    
+    for num_col in ['minimum_nights', 'maximum_nights']:
+        calendar[num_col] = pd.to_numeric(calendar[num_col], errors='coerce')
+
+    # 4. Kiểm tra Null, Ngoại lai, Điền chặn (Capping) & Trùng lặp
+    cap_limit = config['qa']['min_nights_cap']
+    
+    calendar['flag_date_missing'] = calendar['date'].isna()
+    calendar['flag_available_missing'] = calendar['available'].isna()
+    
+    calendar['flag_min_max_outlier'] = (
+        (calendar['minimum_nights'] > cap_limit) | 
+        (calendar['minimum_nights'] < 0) | 
+        (calendar['maximum_nights'] < 0)
+    )
+    
+    # Điền chặn ngoại lai (Capping)
+    calendar['minimum_nights_cap'] = calendar['minimum_nights'].clip(lower=1, upper=cap_limit)
+    calendar['maximum_nights_cap'] = calendar['maximum_nights'].clip(lower=1, upper=365)
+    
+    calendar['flag_min_gt_max'] = (calendar['minimum_nights'] > calendar['maximum_nights'])
+    calendar['flag_duplicated'] = calendar.duplicated(subset=['listing_id', 'date', 'snapshot'], keep='first')
+
+    # 5. Tạo Báo cáo QA (Sử dụng hàm quy_tac chuẩn)
+    qa_cal_rules = [
+        quy_tac(
+            "calendar",
+            "R11_Missing_Date_Available",
+            "Thiếu dữ liệu (Missing)",
+            "date IS NULL hoặc available IS NULL",
+            "Khuyết thông tin ngày hoặc trạng thái lịch",
+            "Gắn cờ flag_date_missing và flag_available_missing",
+            int(calendar['flag_date_missing'].sum() + calendar['flag_available_missing'].sum()),
+            round((calendar['flag_date_missing'].sum() + calendar['flag_available_missing'].sum()) / len(calendar) * 100, 2),
+            "Tổng số bản ghi calendar hợp lệ",
+            int(len(calendar)),
+            int(len(calendar) - (calendar['flag_date_missing'].sum() + calendar['flag_available_missing'].sum()))
+        ),
+        quy_tac(
+            "calendar",
+            "R12_Min_Max_Nights_Outliers",
+            "Ngoại lai (Outliers)",
+            f"minimum_nights < 0 hoặc minimum_nights > {cap_limit}",
+            "Số đêm tối thiểu/tối đa âm hoặc vượt trần cấu hình",
+            "Gắn cờ flag_min_max_outlier; điền chặn trần minimum_nights_cap và maximum_nights_cap",
+            int(calendar['flag_min_max_outlier'].sum()),
+            round(calendar['flag_min_max_outlier'].mean() * 100, 2),
+            "Số đêm tối thiểu trung bình trước và sau khi điền chặn trần",
+            round(float(calendar['minimum_nights'].mean()), 2),
+            round(float(calendar['minimum_nights_cap'].mean()), 2)
+        ),
+        quy_tac(
+            "calendar",
+            "R13_Min_Nights_Greater_Than_Max",
+            "Mâu thuẫn logic (Logic Inconsistency)",
+            "minimum_nights > maximum_nights",
+            "Số đêm tối thiểu thiết lập lớn hơn số đêm tối đa",
+            "Gắn cờ flag_min_gt_max để lọc/hiệu chỉnh",
+            int(calendar['flag_min_gt_max'].sum()),
+            round(calendar['flag_min_gt_max'].mean() * 100, 2),
+            "Tỷ lệ bản ghi đúng logic min <= max (%)",
+            round((1 - calendar['flag_min_gt_max'].mean()) * 100, 2),
+            100.0
+        ),
+        quy_tac(
+            "calendar",
+            "R14_Duplicate_Calendar_Entries",
+            "Trùng lặp (Duplicates)",
+            "Trùng (listing_id, date, snapshot)",
+            "Nhiều bản ghi ngày lịch trùng lặp trong cùng một mốc",
+            "Gắn cờ flag_duplicated và giữ lại bản ghi đầu tiên",
+            int(calendar['flag_duplicated'].sum()),
+            round(calendar['flag_duplicated'].mean() * 100, 2),
+            "Số lượng bản ghi calendar duy nhất",
+            int(len(calendar)),
+            int((~calendar['flag_duplicated']).sum())
+        )
+    ]
+    
+    qa_report_calendar = pd.DataFrame(qa_cal_rules)
+
+    # --- 6. XUẤT TỆP RA CÁC THƯ MỤC CỤ THỂ (GIỐNG MẪU LISTINGS) ---
+    
+    # 6.1 Xuất file tổng hợp vào data/processed/
+    combined_out = proc_dir / "calendar_cleaned.csv"
+    calendar.to_csv(combined_out, index=False, encoding="utf-8")
+    
+    # 6.2 Lặp qua từng mốc snapshot để tạo thư mục riêng và lưu calendar_cleaned.csv
+    for date in snapshot:
+        snap_dir = proc_dir / str(date)
+        snap_dir.mkdir(parents=True, exist_ok=True)
+        calendar_snap = calendar.loc[calendar["snapshot"] == date]
+        calendar_snap.to_csv(snap_dir / "calendar_cleaned.csv", index=False, encoding="utf-8")
+
+    return qa_report_calendar
 
 def run_qa(config_path, root = PROJECT_PATH):
         check_input(config_path, root)
         print("Cau truc dau vao da OKK")
         
-        reports = [process_listings(config_path, root)]
+        reports = [process_listings(config_path, root), process_calendar(config_path, root)]
         qa_report = pd.concat(reports, ignore_index=True)
         report_path = root / "reports"
         report_path.mkdir(parents = True, exist_ok = True)

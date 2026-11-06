@@ -225,3 +225,5 @@ data/raw
 #notebook test
 test.ipynb
 test_qa.ipynb
+
+data/processed/calendar_cleaned.csv
