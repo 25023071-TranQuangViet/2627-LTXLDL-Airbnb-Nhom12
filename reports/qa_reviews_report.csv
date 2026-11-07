@@ -1,0 +1,4 @@
+rule_name,category,condition,reason,action,affected_rows,affected_pct,kpi_metric,kpi_before,kpi_after
+REV1_Html_In_Comments,Kiểu sai (Wrong Type),comments chứa thẻ <br/> hoặc khoảng trắng thừa,Nội dung gốc lưu dạng HTML thô,"Thay <br/> bằng khoảng trắng, gộp khoảng trắng -> comments",4444,22.22,Số review còn thẻ HTML,4444,0
+REV2_Not_In_Snapshot,Thiếu dữ liệu (Missing),review_id trong reviews-loc.csv không có trong tệp reviews của mốc,Review tìm được ở mốc nào thì mới đưa vào mốc đó,"Giữ 1 dòng, gắn cờ flag_not_in_snapshot",0,0.0,Số review tìm thấy,20000,20000
+REV3_Usable_For_LLM,Tổng hợp,"Không rỗng, có trong mốc",Điều kiện để một review được đưa vào phân tích LLM,Cột usable_for_llm (kết hợp với Mẫu LLM),0,0.0,Số review dùng được,20000,20000
