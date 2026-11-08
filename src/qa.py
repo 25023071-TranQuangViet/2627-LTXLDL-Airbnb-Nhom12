@@ -518,11 +518,158 @@ def process_calendar(config_path, root=PROJECT_PATH):
 
     return qa_report_calendar
 
+def process_reviews(config_path, root: Path = PROJECT_PATH):
+        """Đọc, lọc, làm sạch, gắn cờ QA cho reviews ở cả 4 mốc và tạo báo cáo QA."""
+
+
+        with Path(config_path).open("r", encoding="utf-8") as f:
+                        config = yaml.safe_load(f)
+        snapshots = config["snapshots"]
+        last_snap = snapshots[-1]
+        proc_dir = root / "data" / "processed"
+        proc_dir.mkdir(parents=True, exist_ok=True)
+        review_loc = pd.read_csv(
+        proc_dir / "reviews-loc.csv",
+        dtype= str,
+        encoding="utf-8-sig",
+        )
+        review_loc = review_loc.rename(columns={"listing_id": "listing_id_loc"})
+        cot_loc = ["review_id", "listing_id_loc"] + [c for c in ("Mẫu LLM", "Nhãn tay") if c in review_loc.columns]
+
+
+        # review_loc = pd.read_csv(proc_dir / cfg.get("reviews_ids", "reviews-loc.csv"), dtype=str,
+        #                             encoding="utf-8-sig")
+        # review_loc = review_loc.rename(columns={"listing_id": "listing_id_loc"})
+        # cot_loc = ["review_id", "listing_id_loc"] + [c for c in ("Mẫu LLM", "Nhãn tay") if c in review_loc.columns]
+
+        review_loc = review_loc[cot_loc].drop_duplicates("review_id")
+        frames = []
+        for snap in snapshots:
+                path = root / "data" / "raw" / f"{snap}" / "reviews.csv.gz"
+                raw = pd.read_csv(path, compression="gzip", dtype=str,
+                                usecols=lambda c: c in {"listing_id", "id", "date", "reviewer_id", "comments"})
+                m = raw.merge(review_loc, left_on="id", right_on="review_id", how="right")
+                m["flag_not_in_snapshot"] = m["id"].isna()
+                m["id"] = m["id"].fillna(m["review_id"])
+                m["snapshot"] = snap
+                frames.append(m)
+        df = pd.concat(frames, ignore_index=True)
+        n_total = len(df)
+        snap_dt = pd.to_datetime(df["snapshot"], format = "%Y-%m-%d", errors = "coerce")
+
+
+        # # ['listing_id',
+        #  'id',
+        #  'date',
+        #  'reviewer_id',
+        #  'comments',
+        #  'review_id',
+        #  'listing_id_loc',
+        #  'Mẫu LLM',
+        #  'Nhãn tay',
+        #  'flag_not_in_snapshot',
+        #  'snapshot']
+        
+
+
+        # gán cờ cho Mẫu LLM , Nhãn tay (na = False, not na = True): 
+        df['flag_LLM'] = df['Mẫu LLM'].notna()
+        df['flag_human'] = df['Nhãn tay'].notna()
+
+
+        # Thay "<br/>" và '\r' bằng dấu cách để 2 câu không dính vào nhau khi tìm từ khóa : 
+        co_br = df['comments'].str.contains(r"\r?<br/>", regex = True)
+        n_html = co_br.sum()
+        df["comments_fixed"] = (
+        df["comments"]
+        .str.replace(r"\r?<br/>", " ", regex=True)
+        .str.replace(r"\s+", " ", regex=True)   
+        )
+        n_html_after = int(df["comments_fixed"].str.contains(r"\r?<br/>", regex=True, na=False).sum())
+
+        # Gắn cờ cho các review có comment quá ngắn (dưới min_chars ký tự):
+        df["flag_short_comment"] = df["comments"].notna() & (df["comments"].str.len() < config["qa"]["min_chars"])
+
+        # thiếu:  
+        
+        df["flag_empty_comment"] = ~df["flag_not_in_snapshot"] & (df["comments"].isna() | df["comments"].str.strip().str.lower().isin(NAN_TOKENS))
+
+
+        # Báo cáo QA:
+        use = ~(df["flag_empty_comment"] | df["flag_not_in_snapshot"])
+        con_lai = df[~df["flag_not_in_snapshot"]]
+        qa_rules = [
+                quy_tac("REV1_Not_In_Snapshot", "Thiếu dữ liệu (Missing)",
+                        "review_id trong reviews-loc.csv không có trong tệp reviews của mốc",
+                        "Review tìm được ở mốc nào thì mới đưa vào mốc đó",
+                        "Giữ 1 dòng, gắn cờ flag_not_in_snapshot",
+                        df["flag_not_in_snapshot"].sum(), df["flag_not_in_snapshot"].mean(), "Số review tìm thấy",
+                        int(n_total), int(len(con_lai))),
+                
+                quy_tac("REV2_Html_In_Comments", "Kiểu sai (Wrong Type)",
+                        "comments chứa thẻ <br/> hoặc khoảng trắng thừa",
+                        "Nội dung gốc lưu dạng HTML thô",
+                        "Thay <br/> bằng khoảng trắng, gộp khoảng trắng -> comments",
+                        n_html, co_br.mean(), "Số review còn thẻ HTML", n_html,
+                        n_html_after),
+
+
+                quy_tac("REV3_Empty_Comment", "Thiếu dữ liệu (Missing)",
+                        "comments rỗng sau khi làm sạch",
+                        "Review không có nội dung thì LLM không phân loại được ồn/an toàn",
+                        "Gắn cờ flag_empty_comment; loại khỏi mẫu LLM khi tính KPI",
+                        df["flag_empty_comment"].sum(), df["flag_empty_comment"].mean(), "Số review có nội dung",
+                        len(df.loc[~df["flag_not_in_snapshot"] ,"comments"]),
+                        (~df["flag_empty_comment"]).sum()),
+
+                quy_tac("REV4_Short_Comment", "Ngoại lai (Outliers)",
+                        f"độ dài comments_clean < {config["qa"]["min_chars"]} ký tự",
+                        "Quá ngắn để phân loại",
+                        "Gắn cờ flag_short_comment",
+                        df["flag_short_comment"].sum(), df["flag_short_comment"].mean(), "Độ dài review trung bình (ký tự)",
+                        round(float(con_lai["comments"].str.len().mean()), 1),
+                        round(float(con_lai.loc[~con_lai["flag_short_comment"], "comments"].str.len().mean()), 1)),
+        ]
+        
+        report = pd.DataFrame(qa_rules)
+
+
+
+        # Lưu kết quả:
+        df["usable_for_llm"] = use
+
+        cot_ra = [
+                'snapshot',
+                'listing_id',
+                'review_id',
+                'date',
+                'reviewer_id',
+                'comments',
+                'listing_id_loc',
+                'Mẫu LLM',
+                'Nhãn tay',
+                'flag_not_in_snapshot',
+                'flag_short_comment',
+                'flag_empty_comment',
+                'flag_LLM',
+                'flag_human',
+                'usable_for_llm'
+                ]
+        df_out = df[cot_ra]
+        combined_out = proc_dir / "reviews_cleaned.csv"
+        df_out.to_csv(combined_out, index=False, encoding="utf-8")
+        for date in snapshot:
+                snap_dir = proc_dir / str(date)
+                snap_dir.mkdir(parents=True, exist_ok=True)
+                review_snap = df_out.loc[df_out["snapshot"] == date]
+                review_snap.to_csv(snap_dir / "reviews_cleaned.csv", index=False, encoding="utf-8")
+        return report
+
 def run_qa(config_path, root = PROJECT_PATH):
         check_input(config_path, root)
         print("Cau truc dau vao da OKK")
         
-        reports = [process_listings(config_path, root), process_calendar(config_path, root)]
+        reports = [process_listings(config_path, root), process_calendar(config_path, root), process_reviews(config_path, root)]
         qa_report = pd.concat(reports, ignore_index=True)
         report_path = root / "reports"
         report_path.mkdir(parents = True, exist_ok = True)
