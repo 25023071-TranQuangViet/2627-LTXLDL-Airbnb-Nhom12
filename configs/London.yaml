@@ -6,3 +6,11 @@ qa:
   price_max_gbp: 5000
   min_nights_cap: 365
   dedupe_keys: [id, last_scraped]
+
+llm:
+  provider: gemini                # model tuỳ chọn
+  sample_size: 3000               # nhóm giải thích cỡ mẫu
+  aspects: [vị trí, sạch sẽ, chủ nhà, giá trị, tiện nghi, độ ồn, an toàn]
+  cache: data/processed/llm_cache.jsonl
+
+seed: 42
