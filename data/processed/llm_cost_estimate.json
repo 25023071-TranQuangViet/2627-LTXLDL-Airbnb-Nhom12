@@ -1,0 +1,10 @@
+{
+  "model": "gemini-3.5-flash-lite",
+  "n_calls_cached": 6,
+  "avg_input_tokens": 159.2,
+  "avg_output_tokens": 52.5,
+  "usd_per_review": 0.000179,
+  "usd_this_sample": 0.0011,
+  "usd_per_1000_reviews": 0.179,
+  "days_per_1000_reviews_free_tier": 2.0
+}

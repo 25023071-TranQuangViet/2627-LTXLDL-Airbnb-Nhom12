@@ -1,6 +1,22 @@
 city: London
 data_root: united-kingdom/england/london
-snapshots: [2025-09-14,2025-12-13, 2026-03-21, 2026-06-19]
+snapshots: [2025-09-14, 2025-12-13, 2026-03-21, 2026-06-19]
+currency: GBP
 qa:
+  price_max_gbp: 5000
   min_nights_cap: 365
   dedupe_keys: [id, last_scraped]
+  min_chars: 3
+
+llm:
+  model: gemini-3.5-flash-lite        
+  api_key_env: GEMINI_API_KEY         
+  batch_size: 1                       # số review mỗi lời gọi 
+  rpm: 15                             # lời gọi/phút tối đa (gói miễn phí flash-lite)
+  rpd: 500                            # lời gọi/ngày tối đa, chỉ dùng để ước tính số ngày
+  price_per_1m_input: 0.30            # USD/1 triệu token vào (Pricing, 19/10/2026)
+  price_per_1m_output: 2.50           # USD/1 triệu token ra
+  aspects: [location, cleanliness, host, value, noise, amenities, safety]
+  noise_aspect: noise                 # khía cạnh dùng cho noise_neg (KPI K7)
+  safety_aspect: safety               # khía cạnh dùng cho safety_neg (KPI K8)
+  cache: data/processed/llm_cache.jsonl

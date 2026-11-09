@@ -1,0 +1,7 @@
+review_id,listing_id,date,sentiment,aspects_positive,aspects_negative,language,pos_location,neg_location,pos_cleanliness,neg_cleanliness,pos_host,neg_host,pos_value,neg_value,pos_noise,neg_noise,pos_amenities,neg_amenities,pos_safety,neg_safety,chk_empty_but_labeled,chk_both_lists,chk_short_many_aspects
+1188374783954195063,997677536246406261,2024-06-27,positive,host;location;amenities,,en,True,False,False,False,True,False,False,False,False,False,True,False,False,False,False,False,False
+1188324284578323463,1076732221173477995,2024-06-27,positive,cleanliness;location;host,,en,True,False,True,False,True,False,False,False,False,False,False,False,False,False,False,False,False
+1188281565677778110,854750112466290951,2024-06-27,positive,location,,en,True,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False
+1187639333219841785,14300513,2024-06-26,positive,location;amenities,,en,True,False,False,False,False,False,False,False,False,False,True,False,False,False,False,False,False
+1186939769949826231,664959402841111690,2024-06-25,positive,location;amenities,,en,True,False,False,False,False,False,False,False,False,False,True,False,False,False,False,False,False
+1190501204824741744,49955160,2024-06-30,positive,location;host;amenities,,en,True,False,False,False,True,False,False,False,False,False,True,False,False,False,False,False,False
