@@ -6,4 +6,4 @@ qa:
   price_max_gbp: 5000
   min_nights_cap: 365
   dedupe_keys: [id, last_scraped]
-  min_chars: 3
+  min_chars: 50

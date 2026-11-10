@@ -644,7 +644,7 @@ def process_reviews(config_path, root: Path = PROJECT_PATH):
                 'review_id',
                 'date',
                 'reviewer_id',
-                'comments',
+                'comments_fixed',
                 'listing_id_loc',
                 'Mẫu LLM',
                 'Nhãn tay',
