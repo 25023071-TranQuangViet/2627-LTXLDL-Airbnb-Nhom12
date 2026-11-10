@@ -592,21 +592,21 @@ def process_reviews(config_path, root: Path = PROJECT_PATH):
 
         # thiếu:  
         
-        df["flag_empty_comment"] = ~df["flag_not_in_snapshot"] & (df["comments"].isna() | df["comments"].str.strip().str.lower().isin(NAN_TOKENS))
+        df["flag_empty_comment"] = ~df["flag_not_in_snapshot"] & (df["comments"].isna() | df["comments"].str.strip().str.lower().isin(NAN_TOKENS) | df["comments"].str.strip().eq("."))
 
 
         # Báo cáo QA:
         use = ~(df["flag_empty_comment"] | df["flag_not_in_snapshot"])
         con_lai = df[~df["flag_not_in_snapshot"]]
         qa_rules = [
-                quy_tac("REV1_Not_In_Snapshot", "Thiếu dữ liệu (Missing)",
+                quy_tac("reviews" ,"REV1_Not_In_Snapshot", "Thiếu dữ liệu (Missing)",
                         "review_id trong reviews-loc.csv không có trong tệp reviews của mốc",
                         "Review tìm được ở mốc nào thì mới đưa vào mốc đó",
                         "Giữ 1 dòng, gắn cờ flag_not_in_snapshot",
                         df["flag_not_in_snapshot"].sum(), df["flag_not_in_snapshot"].mean(), "Số review tìm thấy",
                         int(n_total), int(len(con_lai))),
                 
-                quy_tac("REV2_Html_In_Comments", "Kiểu sai (Wrong Type)",
+                quy_tac("reviews", "REV2_Html_In_Comments", "Kiểu sai (Wrong Type)",
                         "comments chứa thẻ <br/> hoặc khoảng trắng thừa",
                         "Nội dung gốc lưu dạng HTML thô",
                         "Thay <br/> bằng khoảng trắng, gộp khoảng trắng -> comments",
@@ -614,7 +614,7 @@ def process_reviews(config_path, root: Path = PROJECT_PATH):
                         n_html_after),
 
 
-                quy_tac("REV3_Empty_Comment", "Thiếu dữ liệu (Missing)",
+                quy_tac("reviews", "REV3_Empty_Comment", "Thiếu dữ liệu (Missing)",
                         "comments rỗng sau khi làm sạch",
                         "Review không có nội dung thì LLM không phân loại được ồn/an toàn",
                         "Gắn cờ flag_empty_comment; loại khỏi mẫu LLM khi tính KPI",
@@ -622,7 +622,7 @@ def process_reviews(config_path, root: Path = PROJECT_PATH):
                         len(df.loc[~df["flag_not_in_snapshot"] ,"comments"]),
                         (~df["flag_empty_comment"]).sum()),
 
-                quy_tac("REV4_Short_Comment", "Ngoại lai (Outliers)",
+                quy_tac("reviews", "REV4_Short_Comment", "Ngoại lai (Outliers)",
                         f"độ dài comments_clean < {config["qa"]["min_chars"]} ký tự",
                         "Quá ngắn để phân loại",
                         "Gắn cờ flag_short_comment",
@@ -658,7 +658,7 @@ def process_reviews(config_path, root: Path = PROJECT_PATH):
         df_out = df[cot_ra]
         combined_out = proc_dir / "reviews_cleaned.csv"
         df_out.to_csv(combined_out, index=False, encoding="utf-8")
-        for date in snapshot:
+        for date in snapshots:
                 snap_dir = proc_dir / str(date)
                 snap_dir.mkdir(parents=True, exist_ok=True)
                 review_snap = df_out.loc[df_out["snapshot"] == date]
