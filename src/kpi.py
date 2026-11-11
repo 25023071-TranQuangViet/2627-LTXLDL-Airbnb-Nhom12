@@ -107,17 +107,21 @@ def kpi_thoi_gian(ls, cac_moc, last_snap, proc):
             "availability_pct": round(float(cal["a"].mean() * 100), 2), "n_calendar_days": len(cal),
         })
         
-        for khoa, nhom, ds in (("month", cal["date"].dt.strftime("%Y-%m"), theo_thang),
-                               ("season", cal["date"].dt.month.map(MUA), theo_mua)):
-            g = cal.groupby(nhom)["a"].agg(["mean", "size"]).reset_index()
-            g.columns = [khoa, "mean", "n_days"]
-            g["availability_pct"] = (g["mean"] * 100).round(2)
-            g.insert(0, "snapshot", snap)
-            ds.append(g[["snapshot", khoa, "availability_pct", "n_days"]])
-            
+        cal["date_thang"] = cal["date"].dt.strftime("%Y-%m")
+        a_thang = cal.groupby("date_thang")["a"].agg(n_days = "size", a_pct = "mean").reset_index()
+        a_thang["availability_pct"] = a_thang["a_pct"] * 100
+        a_thang["snapshot"] = snap
+        theo_thang.append(a_thang[["snapshot", "date_thang", "availability_pct", "n_days"]])
+        
+        cal["season"] = cal["date"].dt.month.map(MUA)
+        a_mua = cal.groupby("season")["a"].agg(n_days = "size", a_pct = "mean").reset_index()
+        a_mua["availability_pct"] = a_mua["a_pct"] * 100
+        a_mua["snapshot"] = snap
+        theo_mua.append(a_mua[["snapshot", "season", "availability_pct", "n_days"]])
+    
+    thang = pd.concat(theo_thang, ignore_index=True)        
     mua = pd.concat(theo_mua, ignore_index=True)
-    mua["season"] = pd.Categorical(mua["season"], ["Xuân", "Hè", "Thu", "Đông"], ordered=True)
-    return (pd.DataFrame(theo_moc), pd.concat(theo_thang, ignore_index=True),
+    return (pd.DataFrame(theo_moc), thang,
             mua.sort_values(["snapshot", "season"]).reset_index(drop=True))
 
 
