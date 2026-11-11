@@ -225,3 +225,6 @@ data/raw
 #notebook test
 test.ipynb
 test_qa.ipynb
+
+# calendar_cleaned lớn, tự sinh lại khi chạy QA
+calendar_cleaned.csv

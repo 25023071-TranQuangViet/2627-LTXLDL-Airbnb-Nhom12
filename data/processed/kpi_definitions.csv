@@ -1,0 +1,7 @@
+kpi_id,kpi_name,target,formula,unit,output_file
+K1,Giá trung vị trên mỗi khách theo borough,Biết borough nào rẻ,"median(price_clean / accommodates), mốc cuối, sau QA",GBP/khách/đêm,kpi_borough_value.csv
+K2,Điểm value trung bình theo borough,Biết borough nào khách thấy đáng tiền,mean(review_scores_value) với number_of_reviews >= 5,điểm 0-5,kpi_borough_value.csv
+K3,Borough giá tốt + value cao,Gợi ý borough nên chọn,Đạt: giá/người <= trung vị TP và value >= trung bình TP (Chắc chắn: cả khoảng tin cậy 95% cũng vượt ngưỡng),phân loại,kpi_borough_value.csv
+K4,"Tỷ lệ listing chưa có review, điểm rating theo mốc",Theo dõi chất lượng dữ liệu đánh giá,mean(number_of_reviews == 0) và mean(review_scores_rating),% và điểm,kpi_snapshot.csv
+K5,Độ sẵn sàng theo tháng và mùa,Biết lúc nào còn nhiều chỗ trống,"số ngày available = t / tổng số ngày hợp lệ, theo (mốc, tháng) và (mốc, mùa)",%,"kpi_availability_month.csv, kpi_availability_season.csv"
+K6,Giá niêm yết trung vị theo mốc,Xem giá đổi thế nào qua 4 quý,"median(price_raw_num), loại giá <= 0 hoặc quá ngưỡng",GBP/đêm,kpi_snapshot.csv
