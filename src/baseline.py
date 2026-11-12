@@ -78,7 +78,7 @@ def du_doan(text, aspects):
     pos, neg = set(), set()
     for cau in cau_list:
         tokens = TOKEN.findall(cau)
-        k, c = dem_khen_che(tokens, POSITIVE, )
+        k, c = dem_khen_che(tokens, POSITIVE, NEGATIVE)
         khen_tong += k
         che_tong += c
         for asp in aspects:
@@ -110,10 +110,10 @@ def run_baseline(config_path, root=PROJECT_PATH):
     aspects = list(llm_cfg["aspects"])
     re_path = root / "data" / "processed" / "reviews_cleaned"
     reviews = pd.read_csv(re_path, dtype = {"review_id": "str", "listing_id": "str"})
-    mau = reviews.loc[reviews["flag_human"]]
+    mau = reviews.loc[(~reviews["flag_id_duplicates"]) & (reviews["flag_human"])]
     dong = []
     for r in mau.itertuples():
-        d = du_doan(r.comments_clean, aspects)
+        d = du_doan(r.comments_fixed, aspects)
         dong.append({"review_id": r.review_id, "listing_id": r.listing_id, "sentiment": d["sentiment"],
                      "language": d["language"], "aspects_pos": "|".join(d["aspects_pos"]),
                      "aspects_neg": "|".join(d["aspects_neg"]),

@@ -1,0 +1,401 @@
+review_id,listing_id,sentiment,language,aspects_pos,aspects_neg,noise_neg,safety_neg,model
+22767748,1548874,positive,en,sạch sẽ|tiện nghi,,0,0,baseline-lexicon
+28693898,2328836,positive,en,an toàn|chủ nhà|vị trí,,0,0,baseline-lexicon
+37580257,3482302,positive,en,sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+47905654,5868847,positive,en,sạch sẽ,,0,0,baseline-lexicon
+54662775,7356185,positive,en,giá trị|vị trí,,0,0,baseline-lexicon
+71928361,1548874,positive,en,chủ nhà|sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+100468682,11769774,positive,en,vị trí,,0,0,baseline-lexicon
+109406074,3949798,mixed,en,vị trí,,0,0,baseline-lexicon
+125542729,13026225,positive,en,vị trí,,0,0,baseline-lexicon
+140008119,13026225,positive,en,sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+189884133,7356185,positive,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+196988496,8282811,positive,en,,,0,0,baseline-lexicon
+207500638,20778123,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+223024009,22081628,positive,en,,,0,0,baseline-lexicon
+261890413,7356185,positive,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+283548807,17376899,positive,en,vị trí,,0,0,baseline-lexicon
+353485480,4283521,positive,en,vị trí,,0,0,baseline-lexicon
+355185218,13072033,positive,en,chủ nhà,,0,0,baseline-lexicon
+485103721,983555,positive,en,tiện nghi,,0,0,baseline-lexicon
+495720438,27247681,positive,other,tiện nghi|vị trí,,0,0,baseline-lexicon
+550672280,11769774,positive,en,chủ nhà|sạch sẽ|vị trí,,0,0,baseline-lexicon
+580823248,9133028,positive,en,chủ nhà,,0,0,baseline-lexicon
+593885192,34386640,positive,en,chủ nhà,,0,0,baseline-lexicon
+635380801,14300513,positive,en,,,0,0,baseline-lexicon
+650427249,20778123,positive,en,chủ nhà|tiện nghi|vị trí,,0,0,baseline-lexicon
+715507228,14300513,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+544090260326725801,49724919,positive,en,sạch sẽ|tiện nghi|vị trí,,0,0,baseline-lexicon
+569422916975663074,1286611,positive,en,sạch sẽ,,0,0,baseline-lexicon
+575961941530985937,27744240,positive,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+610714874424602309,35633750,positive,en,giá trị,,0,0,baseline-lexicon
+616497390045837209,49724919,positive,en,chủ nhà|sạch sẽ|tiện nghi|vị trí,,0,0,baseline-lexicon
+625224449199885220,35311169,positive,en,vị trí,,0,0,baseline-lexicon
+633903817987364420,53140906,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+673071601818035250,4018456,positive,en,chủ nhà|sạch sẽ|tiện nghi|vị trí,,0,0,baseline-lexicon
+705576116490840023,40797001,positive,en,chủ nhà|sạch sẽ|vị trí,,0,0,baseline-lexicon
+754259207668447718,14300513,mixed,en,vị trí,,0,0,baseline-lexicon
+799102376504809056,754383291827464446,mixed,en,chủ nhà|giá trị|sạch sẽ|vị trí,,0,0,baseline-lexicon
+802075568613298210,781018518118513454,mixed,en,chủ nhà,tiện nghi,0,0,baseline-lexicon
+850579142466429940,40418418,positive,en,sạch sẽ|tiện nghi|vị trí,,0,0,baseline-lexicon
+850582173010201439,33762084,positive,en,sạch sẽ,,0,0,baseline-lexicon
+869409732150862616,591907885624654280,positive,en,chủ nhà,,0,0,baseline-lexicon
+885322652645184200,1543097,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+915782729749418960,29643859,positive,en,,,0,0,baseline-lexicon
+919481945205398349,24956323,positive,en,chủ nhà,,0,0,baseline-lexicon
+936826922234835569,561491251616764990,positive,en,sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+938234218746200498,29922263,positive,en,chủ nhà|giá trị|sạch sẽ|tiện nghi|vị trí|độ ồn,,0,0,baseline-lexicon
+943363355155269762,18893469,positive,en,chủ nhà|sạch sẽ|vị trí,,0,0,baseline-lexicon
+961458594631915800,17332069,mixed,en,vị trí,độ ồn,1,0,baseline-lexicon
+962963596534035974,49372948,positive,en,sạch sẽ,,0,0,baseline-lexicon
+966594357869488800,1291630,mixed,en,chủ nhà|vị trí|độ ồn,,0,0,baseline-lexicon
+1001386275813426667,9133028,positive,en,,,0,0,baseline-lexicon
+1004213998110210628,35430972,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+1014413062541663179,35633750,mixed,en,sạch sẽ|tiện nghi|vị trí|độ ồn,,0,0,baseline-lexicon
+1034735689778707267,559240473622673962,positive,en,chủ nhà,,0,0,baseline-lexicon
+1073828134885947901,935982997275140109,mixed,en,sạch sẽ|tiện nghi,tiện nghi,0,0,baseline-lexicon
+1094143572688568266,997677536246406261,positive,en,tiện nghi|vị trí,,0,0,baseline-lexicon
+1099236943925227942,656253650347223333,mixed,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+1129585357683646253,950665216346050072,positive,en,chủ nhà,,0,0,baseline-lexicon
+1148474927118680960,14300513,positive,en,tiện nghi,,0,0,baseline-lexicon
+1151405065484950873,746410263182526360,positive,en,vị trí,,0,0,baseline-lexicon
+1175979174764645844,41540223,positive,en,chủ nhà,,0,0,baseline-lexicon
+1176057408254031208,52668377,positive,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+1188281565677778110,854750112466290951,positive,en,vị trí,,0,0,baseline-lexicon
+1195540542296273777,587982154177604573,positive,en,chủ nhà|sạch sẽ|vị trí,,0,0,baseline-lexicon
+1220250562953825771,1003155254213819437,positive,en,an toàn|chủ nhà|sạch sẽ|tiện nghi|vị trí,,0,0,baseline-lexicon
+1223799929689810130,1018226418818502689,positive,en,vị trí,,0,0,baseline-lexicon
+1226023223199634312,436458,positive,en,vị trí,,0,0,baseline-lexicon
+1226047860661158934,894163076156594185,positive,en,vị trí|độ ồn,,0,0,baseline-lexicon
+1236168785155820188,40797001,positive,en,chủ nhà|vị trí|độ ồn,,0,0,baseline-lexicon
+1236223047192004838,1054981307573027932,positive,en,,,0,0,baseline-lexicon
+1244824970831421209,1060030975245368893,positive,en,chủ nhà,,0,0,baseline-lexicon
+1251380739533727118,1107882191125455686,positive,en,sạch sẽ|vị trí,,0,0,baseline-lexicon
+1266573312487257316,857900159044063814,positive,en,,,0,0,baseline-lexicon
+1269562171631452563,11769774,positive,en,chủ nhà,,0,0,baseline-lexicon
+1305750749722656307,1732330,positive,en,,,0,0,baseline-lexicon
+1321018456968712329,918587592578298968,positive,en,vị trí,,0,0,baseline-lexicon
+1344875568407046525,652067792992771185,mixed,en,chủ nhà|sạch sẽ,sạch sẽ|tiện nghi,0,0,baseline-lexicon
+1345639253341214185,9092859,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+1410818265794264688,924502361021909601,positive,en,sạch sẽ,,0,0,baseline-lexicon
+1412268302435398912,1338337442723407680,positive,en,,,0,0,baseline-lexicon
+1418029178371526183,958600343008716597,positive,en,tiện nghi|vị trí|độ ồn,,0,0,baseline-lexicon
+1421036022935441729,862803729544703789,positive,en,chủ nhà|vị trí,độ ồn,1,0,baseline-lexicon
+1433354327247405722,1151947995900834749,mixed,en,tiện nghi|vị trí,tiện nghi|vị trí,0,0,baseline-lexicon
+1434054025659149609,1286611,positive,en,chủ nhà,,0,0,baseline-lexicon
+1439792687461762682,1369512900154716178,positive,en,,,0,0,baseline-lexicon
+1440492679930587277,1095452455584737386,positive,en,chủ nhà|tiện nghi,,0,0,baseline-lexicon
+1442732427333636418,14300513,positive,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+1448511968957077170,1354399803996414137,negative,en,,sạch sẽ,0,0,baseline-lexicon
+1460804271332158256,1338269992921899845,mixed,en,,sạch sẽ,0,0,baseline-lexicon
+1461535930530724730,1321842842490839785,positive,en,sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+1463011667230358353,656253650347223333,positive,en,an toàn|chủ nhà|sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+1465234234517331515,843935903119476354,positive,en,tiện nghi|vị trí,,0,0,baseline-lexicon
+1468129559866004338,1305085951319456325,negative,en,,độ ồn,1,0,baseline-lexicon
+1469534314013402783,1313071263914270466,positive,en,tiện nghi,,0,0,baseline-lexicon
+1480393616707544735,1278271947648379463,positive,en,chủ nhà|tiện nghi|vị trí,,0,0,baseline-lexicon
+1481131007909677612,1457799876282477881,positive,en,vị trí,,0,0,baseline-lexicon
+1482607756473498070,1315196030429457884,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+1488400205250466848,997677536246406261,mixed,en,,vị trí|độ ồn,1,0,baseline-lexicon
+1489856944074730250,958600343008716597,positive,en,chủ nhà|tiện nghi|vị trí|độ ồn,,0,0,baseline-lexicon
+1495582218994948343,862803729544703789,positive,other,,,0,0,baseline-lexicon
+22767748,1548874,positive,en,sạch sẽ|tiện nghi,,0,0,baseline-lexicon
+28693898,2328836,positive,en,an toàn|chủ nhà|vị trí,,0,0,baseline-lexicon
+37580257,3482302,positive,en,sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+47905654,5868847,positive,en,sạch sẽ,,0,0,baseline-lexicon
+54662775,7356185,positive,en,giá trị|vị trí,,0,0,baseline-lexicon
+71928361,1548874,positive,en,chủ nhà|sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+100468682,11769774,positive,en,vị trí,,0,0,baseline-lexicon
+109406074,3949798,mixed,en,vị trí,,0,0,baseline-lexicon
+125542729,13026225,positive,en,vị trí,,0,0,baseline-lexicon
+140008119,13026225,positive,en,sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+189884133,7356185,positive,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+196988496,8282811,positive,en,,,0,0,baseline-lexicon
+207500638,20778123,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+223024009,22081628,positive,en,,,0,0,baseline-lexicon
+261890413,7356185,positive,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+283548807,17376899,positive,en,vị trí,,0,0,baseline-lexicon
+353485480,4283521,positive,en,vị trí,,0,0,baseline-lexicon
+355185218,13072033,positive,en,chủ nhà,,0,0,baseline-lexicon
+485103721,983555,positive,en,tiện nghi,,0,0,baseline-lexicon
+495720438,27247681,positive,other,tiện nghi|vị trí,,0,0,baseline-lexicon
+550672280,11769774,positive,en,chủ nhà|sạch sẽ|vị trí,,0,0,baseline-lexicon
+580823248,9133028,positive,en,chủ nhà,,0,0,baseline-lexicon
+593885192,34386640,positive,en,chủ nhà,,0,0,baseline-lexicon
+635380801,14300513,positive,en,,,0,0,baseline-lexicon
+650427249,20778123,positive,en,chủ nhà|tiện nghi|vị trí,,0,0,baseline-lexicon
+715507228,14300513,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+544090260326725801,49724919,positive,en,sạch sẽ|tiện nghi|vị trí,,0,0,baseline-lexicon
+569422916975663074,1286611,positive,en,sạch sẽ,,0,0,baseline-lexicon
+575961941530985937,27744240,positive,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+610714874424602309,35633750,positive,en,giá trị,,0,0,baseline-lexicon
+616497390045837209,49724919,positive,en,chủ nhà|sạch sẽ|tiện nghi|vị trí,,0,0,baseline-lexicon
+625224449199885220,35311169,positive,en,vị trí,,0,0,baseline-lexicon
+633903817987364420,53140906,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+673071601818035250,4018456,positive,en,chủ nhà|sạch sẽ|tiện nghi|vị trí,,0,0,baseline-lexicon
+705576116490840023,40797001,positive,en,chủ nhà|sạch sẽ|vị trí,,0,0,baseline-lexicon
+754259207668447718,14300513,mixed,en,vị trí,,0,0,baseline-lexicon
+799102376504809056,754383291827464446,mixed,en,chủ nhà|giá trị|sạch sẽ|vị trí,,0,0,baseline-lexicon
+802075568613298210,781018518118513454,mixed,en,chủ nhà,tiện nghi,0,0,baseline-lexicon
+850579142466429940,40418418,positive,en,sạch sẽ|tiện nghi|vị trí,,0,0,baseline-lexicon
+850582173010201439,33762084,positive,en,sạch sẽ,,0,0,baseline-lexicon
+869409732150862616,591907885624654280,positive,en,chủ nhà,,0,0,baseline-lexicon
+885322652645184200,1543097,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+915782729749418960,29643859,positive,en,,,0,0,baseline-lexicon
+919481945205398349,24956323,positive,en,chủ nhà,,0,0,baseline-lexicon
+936826922234835569,561491251616764990,positive,en,sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+938234218746200498,29922263,positive,en,chủ nhà|giá trị|sạch sẽ|tiện nghi|vị trí|độ ồn,,0,0,baseline-lexicon
+943363355155269762,18893469,positive,en,chủ nhà|sạch sẽ|vị trí,,0,0,baseline-lexicon
+961458594631915800,17332069,mixed,en,vị trí,độ ồn,1,0,baseline-lexicon
+962963596534035974,49372948,positive,en,sạch sẽ,,0,0,baseline-lexicon
+966594357869488800,1291630,mixed,en,chủ nhà|vị trí|độ ồn,,0,0,baseline-lexicon
+1001386275813426667,9133028,positive,en,,,0,0,baseline-lexicon
+1004213998110210628,35430972,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+1014413062541663179,35633750,mixed,en,sạch sẽ|tiện nghi|vị trí|độ ồn,,0,0,baseline-lexicon
+1034735689778707267,559240473622673962,positive,en,chủ nhà,,0,0,baseline-lexicon
+1073828134885947901,935982997275140109,mixed,en,sạch sẽ|tiện nghi,tiện nghi,0,0,baseline-lexicon
+1094143572688568266,997677536246406261,positive,en,tiện nghi|vị trí,,0,0,baseline-lexicon
+1099236943925227942,656253650347223333,mixed,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+1129585357683646253,950665216346050072,positive,en,chủ nhà,,0,0,baseline-lexicon
+1148474927118680960,14300513,positive,en,tiện nghi,,0,0,baseline-lexicon
+1151405065484950873,746410263182526360,positive,en,vị trí,,0,0,baseline-lexicon
+1175979174764645844,41540223,positive,en,chủ nhà,,0,0,baseline-lexicon
+1176057408254031208,52668377,positive,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+1188281565677778110,854750112466290951,positive,en,vị trí,,0,0,baseline-lexicon
+1195540542296273777,587982154177604573,positive,en,chủ nhà|sạch sẽ|vị trí,,0,0,baseline-lexicon
+1220250562953825771,1003155254213819437,positive,en,an toàn|chủ nhà|sạch sẽ|tiện nghi|vị trí,,0,0,baseline-lexicon
+1223799929689810130,1018226418818502689,positive,en,vị trí,,0,0,baseline-lexicon
+1226023223199634312,436458,positive,en,vị trí,,0,0,baseline-lexicon
+1226047860661158934,894163076156594185,positive,en,vị trí|độ ồn,,0,0,baseline-lexicon
+1236168785155820188,40797001,positive,en,chủ nhà|vị trí|độ ồn,,0,0,baseline-lexicon
+1236223047192004838,1054981307573027932,positive,en,,,0,0,baseline-lexicon
+1244824970831421209,1060030975245368893,positive,en,chủ nhà,,0,0,baseline-lexicon
+1251380739533727118,1107882191125455686,positive,en,sạch sẽ|vị trí,,0,0,baseline-lexicon
+1266573312487257316,857900159044063814,positive,en,,,0,0,baseline-lexicon
+1269562171631452563,11769774,positive,en,chủ nhà,,0,0,baseline-lexicon
+1305750749722656307,1732330,positive,en,,,0,0,baseline-lexicon
+1321018456968712329,918587592578298968,positive,en,vị trí,,0,0,baseline-lexicon
+1344875568407046525,652067792992771185,mixed,en,chủ nhà|sạch sẽ,sạch sẽ|tiện nghi,0,0,baseline-lexicon
+1345639253341214185,9092859,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+1410818265794264688,924502361021909601,positive,en,sạch sẽ,,0,0,baseline-lexicon
+1412268302435398912,1338337442723407680,positive,en,,,0,0,baseline-lexicon
+1418029178371526183,958600343008716597,positive,en,tiện nghi|vị trí|độ ồn,,0,0,baseline-lexicon
+1421036022935441729,862803729544703789,positive,en,chủ nhà|vị trí,độ ồn,1,0,baseline-lexicon
+1433354327247405722,1151947995900834749,mixed,en,tiện nghi|vị trí,tiện nghi|vị trí,0,0,baseline-lexicon
+1434054025659149609,1286611,positive,en,chủ nhà,,0,0,baseline-lexicon
+1439792687461762682,1369512900154716178,positive,en,,,0,0,baseline-lexicon
+1440492679930587277,1095452455584737386,positive,en,chủ nhà|tiện nghi,,0,0,baseline-lexicon
+1442732427333636418,14300513,positive,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+1448511968957077170,1354399803996414137,negative,en,,sạch sẽ,0,0,baseline-lexicon
+1460804271332158256,1338269992921899845,mixed,en,,sạch sẽ,0,0,baseline-lexicon
+1461535930530724730,1321842842490839785,positive,en,sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+1463011667230358353,656253650347223333,positive,en,an toàn|chủ nhà|sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+1465234234517331515,843935903119476354,positive,en,tiện nghi|vị trí,,0,0,baseline-lexicon
+1468129559866004338,1305085951319456325,negative,en,,độ ồn,1,0,baseline-lexicon
+1469534314013402783,1313071263914270466,positive,en,tiện nghi,,0,0,baseline-lexicon
+1480393616707544735,1278271947648379463,positive,en,chủ nhà|tiện nghi|vị trí,,0,0,baseline-lexicon
+1481131007909677612,1457799876282477881,positive,en,vị trí,,0,0,baseline-lexicon
+1482607756473498070,1315196030429457884,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+1488400205250466848,997677536246406261,mixed,en,,vị trí|độ ồn,1,0,baseline-lexicon
+1489856944074730250,958600343008716597,positive,en,chủ nhà|tiện nghi|vị trí|độ ồn,,0,0,baseline-lexicon
+1495582218994948343,862803729544703789,positive,other,,,0,0,baseline-lexicon
+22767748,1548874,positive,en,sạch sẽ|tiện nghi,,0,0,baseline-lexicon
+28693898,2328836,positive,en,an toàn|chủ nhà|vị trí,,0,0,baseline-lexicon
+37580257,3482302,positive,en,sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+47905654,5868847,positive,en,sạch sẽ,,0,0,baseline-lexicon
+54662775,7356185,positive,en,giá trị|vị trí,,0,0,baseline-lexicon
+71928361,1548874,positive,en,chủ nhà|sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+100468682,11769774,positive,en,vị trí,,0,0,baseline-lexicon
+109406074,3949798,mixed,en,vị trí,,0,0,baseline-lexicon
+125542729,13026225,positive,en,vị trí,,0,0,baseline-lexicon
+140008119,13026225,positive,en,sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+189884133,7356185,positive,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+196988496,8282811,positive,en,,,0,0,baseline-lexicon
+207500638,20778123,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+223024009,22081628,positive,en,,,0,0,baseline-lexicon
+261890413,7356185,positive,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+283548807,17376899,positive,en,vị trí,,0,0,baseline-lexicon
+353485480,4283521,positive,en,vị trí,,0,0,baseline-lexicon
+355185218,13072033,positive,en,chủ nhà,,0,0,baseline-lexicon
+485103721,983555,positive,en,tiện nghi,,0,0,baseline-lexicon
+495720438,27247681,positive,other,tiện nghi|vị trí,,0,0,baseline-lexicon
+550672280,11769774,positive,en,chủ nhà|sạch sẽ|vị trí,,0,0,baseline-lexicon
+580823248,9133028,positive,en,chủ nhà,,0,0,baseline-lexicon
+593885192,34386640,positive,en,chủ nhà,,0,0,baseline-lexicon
+635380801,14300513,positive,en,,,0,0,baseline-lexicon
+650427249,20778123,positive,en,chủ nhà|tiện nghi|vị trí,,0,0,baseline-lexicon
+715507228,14300513,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+544090260326725801,49724919,positive,en,sạch sẽ|tiện nghi|vị trí,,0,0,baseline-lexicon
+569422916975663074,1286611,positive,en,sạch sẽ,,0,0,baseline-lexicon
+575961941530985937,27744240,positive,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+610714874424602309,35633750,positive,en,giá trị,,0,0,baseline-lexicon
+616497390045837209,49724919,positive,en,chủ nhà|sạch sẽ|tiện nghi|vị trí,,0,0,baseline-lexicon
+625224449199885220,35311169,positive,en,vị trí,,0,0,baseline-lexicon
+633903817987364420,53140906,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+673071601818035250,4018456,positive,en,chủ nhà|sạch sẽ|tiện nghi|vị trí,,0,0,baseline-lexicon
+705576116490840023,40797001,positive,en,chủ nhà|sạch sẽ|vị trí,,0,0,baseline-lexicon
+754259207668447718,14300513,mixed,en,vị trí,,0,0,baseline-lexicon
+799102376504809056,754383291827464446,mixed,en,chủ nhà|giá trị|sạch sẽ|vị trí,,0,0,baseline-lexicon
+802075568613298210,781018518118513454,mixed,en,chủ nhà,tiện nghi,0,0,baseline-lexicon
+850579142466429940,40418418,positive,en,sạch sẽ|tiện nghi|vị trí,,0,0,baseline-lexicon
+850582173010201439,33762084,positive,en,sạch sẽ,,0,0,baseline-lexicon
+869409732150862616,591907885624654280,positive,en,chủ nhà,,0,0,baseline-lexicon
+885322652645184200,1543097,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+915782729749418960,29643859,positive,en,,,0,0,baseline-lexicon
+919481945205398349,24956323,positive,en,chủ nhà,,0,0,baseline-lexicon
+936826922234835569,561491251616764990,positive,en,sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+938234218746200498,29922263,positive,en,chủ nhà|giá trị|sạch sẽ|tiện nghi|vị trí|độ ồn,,0,0,baseline-lexicon
+943363355155269762,18893469,positive,en,chủ nhà|sạch sẽ|vị trí,,0,0,baseline-lexicon
+961458594631915800,17332069,mixed,en,vị trí,độ ồn,1,0,baseline-lexicon
+962963596534035974,49372948,positive,en,sạch sẽ,,0,0,baseline-lexicon
+966594357869488800,1291630,mixed,en,chủ nhà|vị trí|độ ồn,,0,0,baseline-lexicon
+1001386275813426667,9133028,positive,en,,,0,0,baseline-lexicon
+1004213998110210628,35430972,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+1014413062541663179,35633750,mixed,en,sạch sẽ|tiện nghi|vị trí|độ ồn,,0,0,baseline-lexicon
+1034735689778707267,559240473622673962,positive,en,chủ nhà,,0,0,baseline-lexicon
+1073828134885947901,935982997275140109,mixed,en,sạch sẽ|tiện nghi,tiện nghi,0,0,baseline-lexicon
+1094143572688568266,997677536246406261,positive,en,tiện nghi|vị trí,,0,0,baseline-lexicon
+1099236943925227942,656253650347223333,mixed,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+1129585357683646253,950665216346050072,positive,en,chủ nhà,,0,0,baseline-lexicon
+1148474927118680960,14300513,positive,en,tiện nghi,,0,0,baseline-lexicon
+1151405065484950873,746410263182526360,positive,en,vị trí,,0,0,baseline-lexicon
+1175979174764645844,41540223,positive,en,chủ nhà,,0,0,baseline-lexicon
+1176057408254031208,52668377,positive,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+1188281565677778110,854750112466290951,positive,en,vị trí,,0,0,baseline-lexicon
+1195540542296273777,587982154177604573,positive,en,chủ nhà|sạch sẽ|vị trí,,0,0,baseline-lexicon
+1220250562953825771,1003155254213819437,positive,en,an toàn|chủ nhà|sạch sẽ|tiện nghi|vị trí,,0,0,baseline-lexicon
+1223799929689810130,1018226418818502689,positive,en,vị trí,,0,0,baseline-lexicon
+1226023223199634312,436458,positive,en,vị trí,,0,0,baseline-lexicon
+1226047860661158934,894163076156594185,positive,en,vị trí|độ ồn,,0,0,baseline-lexicon
+1236168785155820188,40797001,positive,en,chủ nhà|vị trí|độ ồn,,0,0,baseline-lexicon
+1236223047192004838,1054981307573027932,positive,en,,,0,0,baseline-lexicon
+1244824970831421209,1060030975245368893,positive,en,chủ nhà,,0,0,baseline-lexicon
+1251380739533727118,1107882191125455686,positive,en,sạch sẽ|vị trí,,0,0,baseline-lexicon
+1266573312487257316,857900159044063814,positive,en,,,0,0,baseline-lexicon
+1269562171631452563,11769774,positive,en,chủ nhà,,0,0,baseline-lexicon
+1305750749722656307,1732330,positive,en,,,0,0,baseline-lexicon
+1321018456968712329,918587592578298968,positive,en,vị trí,,0,0,baseline-lexicon
+1344875568407046525,652067792992771185,mixed,en,chủ nhà|sạch sẽ,sạch sẽ|tiện nghi,0,0,baseline-lexicon
+1345639253341214185,9092859,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+1410818265794264688,924502361021909601,positive,en,sạch sẽ,,0,0,baseline-lexicon
+1412268302435398912,1338337442723407680,positive,en,,,0,0,baseline-lexicon
+1418029178371526183,958600343008716597,positive,en,tiện nghi|vị trí|độ ồn,,0,0,baseline-lexicon
+1421036022935441729,862803729544703789,positive,en,chủ nhà|vị trí,độ ồn,1,0,baseline-lexicon
+1433354327247405722,1151947995900834749,mixed,en,tiện nghi|vị trí,tiện nghi|vị trí,0,0,baseline-lexicon
+1434054025659149609,1286611,positive,en,chủ nhà,,0,0,baseline-lexicon
+1439792687461762682,1369512900154716178,positive,en,,,0,0,baseline-lexicon
+1440492679930587277,1095452455584737386,positive,en,chủ nhà|tiện nghi,,0,0,baseline-lexicon
+1442732427333636418,14300513,positive,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+1448511968957077170,1354399803996414137,negative,en,,sạch sẽ,0,0,baseline-lexicon
+1460804271332158256,1338269992921899845,mixed,en,,sạch sẽ,0,0,baseline-lexicon
+1461535930530724730,1321842842490839785,positive,en,sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+1463011667230358353,656253650347223333,positive,en,an toàn|chủ nhà|sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+1465234234517331515,843935903119476354,positive,en,tiện nghi|vị trí,,0,0,baseline-lexicon
+1468129559866004338,1305085951319456325,negative,en,,độ ồn,1,0,baseline-lexicon
+1469534314013402783,1313071263914270466,positive,en,tiện nghi,,0,0,baseline-lexicon
+1480393616707544735,1278271947648379463,positive,en,chủ nhà|tiện nghi|vị trí,,0,0,baseline-lexicon
+1481131007909677612,1457799876282477881,positive,en,vị trí,,0,0,baseline-lexicon
+1482607756473498070,1315196030429457884,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+1488400205250466848,997677536246406261,mixed,en,,vị trí|độ ồn,1,0,baseline-lexicon
+1489856944074730250,958600343008716597,positive,en,chủ nhà|tiện nghi|vị trí|độ ồn,,0,0,baseline-lexicon
+1495582218994948343,862803729544703789,positive,other,,,0,0,baseline-lexicon
+22767748,1548874,positive,en,sạch sẽ|tiện nghi,,0,0,baseline-lexicon
+28693898,2328836,positive,en,an toàn|chủ nhà|vị trí,,0,0,baseline-lexicon
+37580257,3482302,positive,en,sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+47905654,5868847,positive,en,sạch sẽ,,0,0,baseline-lexicon
+54662775,7356185,positive,en,giá trị|vị trí,,0,0,baseline-lexicon
+71928361,1548874,positive,en,chủ nhà|sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+100468682,11769774,positive,en,vị trí,,0,0,baseline-lexicon
+109406074,3949798,mixed,en,vị trí,,0,0,baseline-lexicon
+125542729,13026225,positive,en,vị trí,,0,0,baseline-lexicon
+140008119,13026225,positive,en,sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+189884133,7356185,positive,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+196988496,8282811,positive,en,,,0,0,baseline-lexicon
+207500638,20778123,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+223024009,22081628,positive,en,,,0,0,baseline-lexicon
+261890413,7356185,positive,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+283548807,17376899,positive,en,vị trí,,0,0,baseline-lexicon
+353485480,4283521,positive,en,vị trí,,0,0,baseline-lexicon
+355185218,13072033,positive,en,chủ nhà,,0,0,baseline-lexicon
+485103721,983555,positive,en,tiện nghi,,0,0,baseline-lexicon
+495720438,27247681,positive,other,tiện nghi|vị trí,,0,0,baseline-lexicon
+550672280,11769774,positive,en,chủ nhà|sạch sẽ|vị trí,,0,0,baseline-lexicon
+580823248,9133028,positive,en,chủ nhà,,0,0,baseline-lexicon
+593885192,34386640,positive,en,chủ nhà,,0,0,baseline-lexicon
+635380801,14300513,positive,en,,,0,0,baseline-lexicon
+650427249,20778123,positive,en,chủ nhà|tiện nghi|vị trí,,0,0,baseline-lexicon
+715507228,14300513,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+544090260326725801,49724919,positive,en,sạch sẽ|tiện nghi|vị trí,,0,0,baseline-lexicon
+569422916975663074,1286611,positive,en,sạch sẽ,,0,0,baseline-lexicon
+575961941530985937,27744240,positive,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+610714874424602309,35633750,positive,en,giá trị,,0,0,baseline-lexicon
+616497390045837209,49724919,positive,en,chủ nhà|sạch sẽ|tiện nghi|vị trí,,0,0,baseline-lexicon
+625224449199885220,35311169,positive,en,vị trí,,0,0,baseline-lexicon
+633903817987364420,53140906,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+673071601818035250,4018456,positive,en,chủ nhà|sạch sẽ|tiện nghi|vị trí,,0,0,baseline-lexicon
+705576116490840023,40797001,positive,en,chủ nhà|sạch sẽ|vị trí,,0,0,baseline-lexicon
+754259207668447718,14300513,mixed,en,vị trí,,0,0,baseline-lexicon
+799102376504809056,754383291827464446,mixed,en,chủ nhà|giá trị|sạch sẽ|vị trí,,0,0,baseline-lexicon
+802075568613298210,781018518118513454,mixed,en,chủ nhà,tiện nghi,0,0,baseline-lexicon
+850579142466429940,40418418,positive,en,sạch sẽ|tiện nghi|vị trí,,0,0,baseline-lexicon
+850582173010201439,33762084,positive,en,sạch sẽ,,0,0,baseline-lexicon
+869409732150862616,591907885624654280,positive,en,chủ nhà,,0,0,baseline-lexicon
+885322652645184200,1543097,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+915782729749418960,29643859,positive,en,,,0,0,baseline-lexicon
+919481945205398349,24956323,positive,en,chủ nhà,,0,0,baseline-lexicon
+936826922234835569,561491251616764990,positive,en,sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+938234218746200498,29922263,positive,en,chủ nhà|giá trị|sạch sẽ|tiện nghi|vị trí|độ ồn,,0,0,baseline-lexicon
+943363355155269762,18893469,positive,en,chủ nhà|sạch sẽ|vị trí,,0,0,baseline-lexicon
+961458594631915800,17332069,mixed,en,vị trí,độ ồn,1,0,baseline-lexicon
+962963596534035974,49372948,positive,en,sạch sẽ,,0,0,baseline-lexicon
+966594357869488800,1291630,mixed,en,chủ nhà|vị trí|độ ồn,,0,0,baseline-lexicon
+1001386275813426667,9133028,positive,en,,,0,0,baseline-lexicon
+1004213998110210628,35430972,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+1014413062541663179,35633750,mixed,en,sạch sẽ|tiện nghi|vị trí|độ ồn,,0,0,baseline-lexicon
+1034735689778707267,559240473622673962,positive,en,chủ nhà,,0,0,baseline-lexicon
+1073828134885947901,935982997275140109,mixed,en,sạch sẽ|tiện nghi,tiện nghi,0,0,baseline-lexicon
+1094143572688568266,997677536246406261,positive,en,tiện nghi|vị trí,,0,0,baseline-lexicon
+1099236943925227942,656253650347223333,mixed,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+1129585357683646253,950665216346050072,positive,en,chủ nhà,,0,0,baseline-lexicon
+1148474927118680960,14300513,positive,en,tiện nghi,,0,0,baseline-lexicon
+1151405065484950873,746410263182526360,positive,en,vị trí,,0,0,baseline-lexicon
+1175979174764645844,41540223,positive,en,chủ nhà,,0,0,baseline-lexicon
+1176057408254031208,52668377,positive,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+1188281565677778110,854750112466290951,positive,en,vị trí,,0,0,baseline-lexicon
+1195540542296273777,587982154177604573,positive,en,chủ nhà|sạch sẽ|vị trí,,0,0,baseline-lexicon
+1220250562953825771,1003155254213819437,positive,en,an toàn|chủ nhà|sạch sẽ|tiện nghi|vị trí,,0,0,baseline-lexicon
+1223799929689810130,1018226418818502689,positive,en,vị trí,,0,0,baseline-lexicon
+1226023223199634312,436458,positive,en,vị trí,,0,0,baseline-lexicon
+1226047860661158934,894163076156594185,positive,en,vị trí|độ ồn,,0,0,baseline-lexicon
+1236168785155820188,40797001,positive,en,chủ nhà|vị trí|độ ồn,,0,0,baseline-lexicon
+1236223047192004838,1054981307573027932,positive,en,,,0,0,baseline-lexicon
+1244824970831421209,1060030975245368893,positive,en,chủ nhà,,0,0,baseline-lexicon
+1251380739533727118,1107882191125455686,positive,en,sạch sẽ|vị trí,,0,0,baseline-lexicon
+1266573312487257316,857900159044063814,positive,en,,,0,0,baseline-lexicon
+1269562171631452563,11769774,positive,en,chủ nhà,,0,0,baseline-lexicon
+1305750749722656307,1732330,positive,en,,,0,0,baseline-lexicon
+1321018456968712329,918587592578298968,positive,en,vị trí,,0,0,baseline-lexicon
+1344875568407046525,652067792992771185,mixed,en,chủ nhà|sạch sẽ,sạch sẽ|tiện nghi,0,0,baseline-lexicon
+1345639253341214185,9092859,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+1410818265794264688,924502361021909601,positive,en,sạch sẽ,,0,0,baseline-lexicon
+1412268302435398912,1338337442723407680,positive,en,,,0,0,baseline-lexicon
+1418029178371526183,958600343008716597,positive,en,tiện nghi|vị trí|độ ồn,,0,0,baseline-lexicon
+1421036022935441729,862803729544703789,positive,en,chủ nhà|vị trí,độ ồn,1,0,baseline-lexicon
+1433354327247405722,1151947995900834749,mixed,en,tiện nghi|vị trí,tiện nghi|vị trí,0,0,baseline-lexicon
+1434054025659149609,1286611,positive,en,chủ nhà,,0,0,baseline-lexicon
+1439792687461762682,1369512900154716178,positive,en,,,0,0,baseline-lexicon
+1440492679930587277,1095452455584737386,positive,en,chủ nhà|tiện nghi,,0,0,baseline-lexicon
+1442732427333636418,14300513,positive,en,chủ nhà|vị trí,,0,0,baseline-lexicon
+1448511968957077170,1354399803996414137,negative,en,,sạch sẽ,0,0,baseline-lexicon
+1460804271332158256,1338269992921899845,mixed,en,,sạch sẽ,0,0,baseline-lexicon
+1461535930530724730,1321842842490839785,positive,en,sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+1463011667230358353,656253650347223333,positive,en,an toàn|chủ nhà|sạch sẽ|vị trí|độ ồn,,0,0,baseline-lexicon
+1465234234517331515,843935903119476354,positive,en,tiện nghi|vị trí,,0,0,baseline-lexicon
+1468129559866004338,1305085951319456325,negative,en,,độ ồn,1,0,baseline-lexicon
+1469534314013402783,1313071263914270466,positive,en,tiện nghi,,0,0,baseline-lexicon
+1480393616707544735,1278271947648379463,positive,en,chủ nhà|tiện nghi|vị trí,,0,0,baseline-lexicon
+1481131007909677612,1457799876282477881,positive,en,vị trí,,0,0,baseline-lexicon
+1482607756473498070,1315196030429457884,positive,en,chủ nhà|sạch sẽ,,0,0,baseline-lexicon
+1488400205250466848,997677536246406261,mixed,en,,vị trí|độ ồn,1,0,baseline-lexicon
+1489856944074730250,958600343008716597,positive,en,chủ nhà|tiện nghi|vị trí|độ ồn,,0,0,baseline-lexicon
+1495582218994948343,862803729544703789,positive,other,,,0,0,baseline-lexicon

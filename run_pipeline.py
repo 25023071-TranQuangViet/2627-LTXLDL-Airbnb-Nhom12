@@ -3,7 +3,7 @@ from pathlib import Path
 from src.download import download_data
 from src.qa import run_qa
 
-def run_pipeline(config_path):
+def run_pipeline(config_path, skip_llm = False):
     download_data(config_path)
 
     run_qa(config_path)

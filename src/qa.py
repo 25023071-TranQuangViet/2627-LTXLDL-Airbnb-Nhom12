@@ -594,9 +594,13 @@ def process_reviews(config_path, root: Path = PROJECT_PATH):
         
         df["flag_empty_comment"] = ~df["flag_not_in_snapshot"] & (df["comments"].isna() | df["comments"].str.strip().str.lower().isin(NAN_TOKENS) | df["comments"].str.strip().eq("."))
 
-
+        # trùng lặp review_id trong df
+        
+        df["flag_id_duplicates"] = df.duplicated(subset=['review_id', 'date'], keep='first')
+        
         # Báo cáo QA:
         use = ~(df["flag_empty_comment"] | df["flag_not_in_snapshot"])
+        df["usable_for_llm"] = use
         con_lai = df[~df["flag_not_in_snapshot"]]
         qa_rules = [
                 quy_tac("reviews" ,"REV1_Not_In_Snapshot", "Thiếu dữ liệu (Missing)",
@@ -629,6 +633,13 @@ def process_reviews(config_path, root: Path = PROJECT_PATH):
                         df["flag_short_comment"].sum(), df["flag_short_comment"].mean(), "Độ dài review trung bình (ký tự)",
                         round(float(con_lai["comments"].str.len().mean()), 1),
                         round(float(con_lai.loc[~con_lai["flag_short_comment"], "comments"].str.len().mean()), 1)),
+                quy_tac("reviews", "RE5_Duplicates", "Trùng lặp",
+                        "bị trùng lặp review_id giữa các mốc sau khi ghép",
+                        "bị trùng lặp review_id giữa các mốc sau khi ghép",
+                        "gắn cờ trùng lặp",
+                        df["flag_id_duplicates"].sum(), df["flag_id_duplicates"].mean(), "Số review độc nhất",
+                        len(df),
+                        (~df["flag_id_duplicates"]).sum())
         ]
         
         report = pd.DataFrame(qa_rules)
@@ -636,7 +647,6 @@ def process_reviews(config_path, root: Path = PROJECT_PATH):
 
 
         # Lưu kết quả:
-        df["usable_for_llm"] = use
 
         cot_ra = [
                 'snapshot',
@@ -651,11 +661,12 @@ def process_reviews(config_path, root: Path = PROJECT_PATH):
                 'flag_not_in_snapshot',
                 'flag_short_comment',
                 'flag_empty_comment',
+                "flag_id_duplicates",
                 'flag_LLM',
                 'flag_human',
                 'usable_for_llm'
                 ]
-        df_out = df[cot_ra]
+        df_out = con_lai[cot_ra]
         combined_out = proc_dir / "reviews_cleaned.csv"
         df_out.to_csv(combined_out, index=False, encoding="utf-8")
         for date in snapshots:
