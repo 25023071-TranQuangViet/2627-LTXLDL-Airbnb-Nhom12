@@ -2,11 +2,14 @@ import argparse
 from pathlib import Path
 from src.download import download_data
 from src.qa import run_qa
+from src.kpi import tinh_kpi
 
 def run_pipeline(config_path, skip_llm = False):
     download_data(config_path)
 
     run_qa(config_path)
+    
+    tinh_kpi(config_path)
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", type = str)

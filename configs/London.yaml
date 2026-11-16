@@ -10,7 +10,7 @@ qa:
 
 llm:
   provider: gemini                # model tuỳ chọn
-  sample_size: 3000               # nhóm giải thích cỡ mẫu
+  sample_size: 1000               # nhóm giải thích cỡ mẫu
   aspects: [vị trí, sạch sẽ, chủ nhà, giá trị, tiện nghi, độ ồn, an toàn]
   cache: data/processed/llm_cache.jsonl
 
