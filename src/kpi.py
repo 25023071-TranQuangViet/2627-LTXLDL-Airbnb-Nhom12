@@ -176,6 +176,31 @@ def kpi_review_change(ls, cac_moc):
         
     return pd.DataFrame(results)
 
+def kpi_room_type(ls, moc_cuoi):
+    ls_last = ls[(ls["snapshot"] == moc_cuoi) & (ls["room_type"].notna()) 
+                & (ls["neighbourhood_cleansed"].notna()) 
+                & (~ls["flag_missing_price_last"])]
+    kieu_theo_vung = []
+    median_entire = ls_last.loc[ls_last["room_type"] == "Entire home/apt", "price_clean"].median()
+    median_private = ls_last.loc[ls_last["room_type"] == "Private room", "price_clean"].median()
+    for borough, g in ls_last.groupby("neighbourhood_cleansed"):
+        ty_le_entire = round((g["room_type"] == "Entire home/apt").mean(), 2)
+        ty_le_private = round((g["room_type"] == "Private room").mean(), 2)
+        trung_vi_en = g.loc[g["room_type"] == "Entire home/apt", "price_clean"].median()
+        trung_vi_pri = g.loc[g["room_type"] == "Private room", "price_clean"].median()
+        lech_trong_vung = round(trung_vi_en / trung_vi_pri, 2)
+        gia_tuong_doi_en = round(trung_vi_en / median_entire, 2)
+        gia_tuong_doi_pri = round(trung_vi_pri / median_private, 2)
+        kieu_theo_vung.append({"neighbour_hood": borough,
+                               "ty_le_entire": ty_le_entire,
+                               "ty_le_private": ty_le_private,
+                               "trung_vi_en": trung_vi_en,
+                               "trung_vi_pri": trung_vi_pri,
+                               "chenh_lech_gia_loai_phong_trong_vung": lech_trong_vung,
+                               "chi_so_gia_tuong_doi_cua_entire_so_voi_city": gia_tuong_doi_en,
+                               "chi_so_gia_tuong_doi_cua_private_so_voi_city": gia_tuong_doi_pri})
+    return pd.DataFrame(kieu_theo_vung)
+        
 
 # ----------------------------------------------------------------------------- K7-K8: ỒN / AN TOÀN (LLM)
 def kpi_complaints(ls_cuoi, p_llm, min_reviews):
@@ -240,6 +265,8 @@ def tinh_kpi(config_path, root=ROOT):
     moc, thang, mua = kpi_thoi_gian(ls, cac_moc, last_snap, proc)
     kq.update({"snapshot": moc, "availability_month": thang, "availability_season": mua})
 
+    kq["room_type"] = kpi_room_type(ls, last_snap)
+    
     p_llm = proc / "llm_results.csv"
     if p_llm.exists():
         kq["complaints_borough"] = kpi_complaints(ls[ls["snapshot"] == last_snap], p_llm,

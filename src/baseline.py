@@ -17,7 +17,7 @@ smelly smell mouldy mold mould broken cold damp rude unhelpful overpriced mislea
 unsafe sketchy dangerous scary problem problems issue issues unfortunately avoid rubbish disgusting
 stain stains dusty leak leaking unresponsive cancelled canceled complaint annoying uncomfortable loud
 bugs cockroach cockroaches mice infested thinwalls sale sucio horrible terrible schmutzig laut""".split())
-NEGATORS = {"not", "no", "never", "without", "hardly", "barely", "nothing", "none", "neither", "nor", "pas", "sin", "nicht", "kein"}
+NEGATORS = {"not", "no", "never", "isn't", "aren't", "wasn't", "weren't", "don't", "doesn't", "didn't", "can't", "couldn't", "won't", "wouldn't", "shouldn't", "mustn't", "haven't", "hasn't", "hadn't", "without", "hardly", "barely", "nothing", "none", "neither", "nor", "pas", "sin", "nicht", "kein"}
  
 # Từ vựng chuyên biệt theo khía cạnh nhạy cảm (nghĩa phụ thuộc phủ định)
 NOISE_POS = {"quiet", "peaceful", "silent", "tranquil", "calm", "soundproof", "soundproofed"}

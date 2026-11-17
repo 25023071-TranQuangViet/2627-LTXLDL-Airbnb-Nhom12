@@ -9,8 +9,13 @@ qa:
   min_chars: 50
 
 llm:
-  provider: gemini                # model tuỳ chọn
+  provider: gemini
+  model: gemini-3.5-flash-lite                # model tuỳ chọn
   sample_size: 1000               # nhóm giải thích cỡ mẫu
+  requests_per_minute: 15        
+  max_calls_per_run: 500
+  price_input_per_m_usd: 0.30
+  price_output_per_m_usd: 2.50
   aspects: [vị trí, sạch sẽ, chủ nhà, giá trị, tiện nghi, độ ồn, an toàn]
   cache: data/processed/llm_cache.jsonl
 
