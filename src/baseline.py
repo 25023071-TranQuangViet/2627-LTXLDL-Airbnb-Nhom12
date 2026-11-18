@@ -25,15 +25,15 @@ NOISE_NEG = {"noisy", "noise", "noises", "loud", "thinwalls", "disturbance", "di
 SAFE_POS = {"safe", "secure", "securely", "safely"}
 SAFE_NEG = {"unsafe", "sketchy", "dangerous", "crime", "robbed", "robbery", "burglary", "theft", "scary", "shady", "stolen"}
 
-ASPECT_NOISE = "độ ồn"
-ASPECT_SAFETY = "an toàn"
+ASPECT_NOISE = "noise"
+ASPECT_SAFETY = "safety"
 
 ASPECT_KW = {
-    "vị trí": r"locat\w*|area|neighbou?rhood|close to|near|walking distance|tube|station|transport|central|metro",
-    "sạch sẽ": r"clean\w*|dirty|spotless|filth\w*|dust\w*|smell\w*|hygien\w*|tidy|stain\w*|mou?ld\w*",
-    "chủ nhà": r"host|owner|landlord|communicat\w*|check-?in|responsive|welcom\w*|hospitalit\w*",
-    "giá trị": r"value|price\w*|expensive|cheap|overpriced|worth|money|cost\w*",
-    "tiện nghi": r"kitchen|wifi|wi-fi|bed\w*|shower|bathroom|heating|amenit\w*|equipped|facilit\w*|\btv\b|washing machine|towels?",
+    "location": r"locat\w*|area|neighbou?rhood|close to|near|walking distance|tube|station|transport|central|metro",
+    "cleanliness": r"clean\w*|dirty|spotless|filth\w*|dust\w*|smell\w*|hygien\w*|tidy|stain\w*|mou?ld\w*",
+    "host": r"host|owner|landlord|communicat\w*|check-?in|responsive|welcom\w*|hospitalit\w*",
+    "value": r"value|price\w*|expensive|cheap|overpriced|worth|money|cost\w*",
+    "amenities": r"kitchen|wifi|wi-fi|bed\w*|shower|bathroom|heating|amenit\w*|equipped|facilit\w*|\btv\b|washing machine|towels?",
 }
 ASPECT_KW[ASPECT_NOISE] = "|".join(sorted(NOISE_POS | NOISE_NEG | {"thin walls", "street noise"}))
 ASPECT_KW[ASPECT_SAFETY] = "|".join(sorted(SAFE_POS | SAFE_NEG | {"safety", "neighbourhood felt", "neighborhood felt"}))
@@ -73,9 +73,10 @@ def doan_ngon_ngu(text):
 
 def du_doan(text, aspects):
     """Một review -> {sentiment, language, aspects_pos, aspects_neg}."""
+    text = str(text).lower()
     cau_list = [c for c in re.split(r"[.!?;\n]+|\bbut\b|\bhowever\b", text) if c.strip()]
     khen_tong = che_tong = 0
-    pos, neg = set(), set()
+    diem_khen, diem_che = {}, {}
     for cau in cau_list:
         tokens = TOKEN.findall(cau)
         k, c = dem_khen_che(tokens, POSITIVE, NEGATIVE)
@@ -92,9 +93,17 @@ def du_doan(text, aspects):
             else:
                 kk, cc = k, c
             if cc > kk:
-                neg.add(asp)
+                if asp not in diem_che:
+                    diem_che[asp] = 1
+                else:
+                    diem_che[asp] += 1
             elif kk > cc:
-                pos.add(asp)
+                if asp not in diem_khen:
+                    diem_khen[asp] = 1
+                else:
+                    diem_khen[asp] += 1
+    pos = set(a for a in diem_khen if (a not in diem_che or diem_khen[a] > diem_che[a]))
+    neg = set(a for a in diem_che if (a not in diem_khen or diem_che[a] >= diem_khen[a]))
     tong = khen_tong + che_tong
     ty_le_che = che_tong / tong if tong else 0.0
     sentiment = "positive" if ty_le_che <= 0.15 else "negative" if ty_le_che >= 0.6 else "mixed"
@@ -108,7 +117,7 @@ def run_baseline(config_path, root=PROJECT_PATH):
         config = yaml.safe_load(f)
     llm_cfg = config["llm"]
     aspects = list(llm_cfg["aspects"])
-    re_path = root / "data" / "processed" / "reviews_cleaned"
+    re_path = root / "data" / "processed" / "reviews_cleaned.csv"
     reviews = pd.read_csv(re_path, dtype = {"review_id": "str", "listing_id": "str"})
     mau = reviews.loc[(~reviews["flag_id_duplicates"]) & (reviews["flag_human"])]
     dong = []
