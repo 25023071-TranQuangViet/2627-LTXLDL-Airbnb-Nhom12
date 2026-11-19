@@ -19,9 +19,6 @@ except ImportError:
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MUA = {12: "Đông", 1: "Đông", 2: "Đông", 3: "Xuân", 4: "Xuân", 5: "Xuân",
-       6: "Hè", 7: "Hè", 8: "Hè", 9: "Thu", 10: "Thu", 11: "Thu"}
-
 
 def bootstrap_ci(values, stat, n_boot=1000, seed=42):
     """Khoảng tin cậy 95% bằng bootstrap: lấy mẫu có hoàn lại n_boot lần, tính stat mỗi lần."""
@@ -113,68 +110,10 @@ def kpi_thoi_gian(ls, cac_moc, last_snap, proc):
         a_thang["snapshot"] = snap
         theo_thang.append(a_thang[["snapshot", "date_thang", "availability_pct", "n_days"]])
         
-        cal["season"] = cal["date"].dt.month.map(MUA)
-        a_mua = cal.groupby("season")["a"].agg(n_days = "size", a_pct = "mean").reset_index()
-        a_mua["availability_pct"] = a_mua["a_pct"] * 100
-        a_mua["snapshot"] = snap
-        theo_mua.append(a_mua[["snapshot", "season", "availability_pct", "n_days"]])
     
     thang = pd.concat(theo_thang, ignore_index=True)        
-    mua = pd.concat(theo_mua, ignore_index=True)
-    return (pd.DataFrame(theo_moc), thang,
-            mua.sort_values(["snapshot", "season"]).reset_index(drop=True))
+    return (pd.DataFrame(theo_moc), thang)
 
-
-# ----------------------------------------------------------------------------- K6 MỚI: ĐỘ TĂNG TRƯỞNG REVIEW
-def kpi_review_change(ls, cac_moc):
-    """K6 (Mới): Độ thay đổi số đánh giá qua các mốc liền kề."""
-    # Lọc listing hợp lệ
-    d_valid = ls[ls["id"].notna() & ~ls["flag_duplicate"]].copy()
-    
-    # Tạo ma trận Pivot: id x snapshot -> number_of_reviews
-    pivot_rev = d_valid.pivot(index="id", columns="snapshot", values="number_of_reviews")
-    
-    results = []
-    # Quét từng cặp mốc liền kề (3 khoảng)
-    for i in range(len(cac_moc) - 1):
-        snap_prev = cac_moc[i]
-        snap_curr = cac_moc[i+1]
-        
-        # Chỉ xét các listing có mặt ở cả 2 mốc
-        valid_idx = pivot_rev[snap_prev].notna() & pivot_rev[snap_curr].notna()
-        df_pair = pivot_rev.loc[valid_idx, [snap_prev, snap_curr]].copy()
-        n_listings = len(df_pair)
-        
-        if n_listings == 0:
-            continue
-            
-        # Delta = mốc sau - mốc trước
-        delta = df_pair[snap_curr] - df_pair[snap_prev]
-        
-        # Tổng review mốc trước để chia tỷ lệ
-        total_rev_prev = df_pair[snap_prev].sum()
-        
-        # Các chỉ số Delta
-        delta_positive_only = delta.where(delta > 0, 0)
-        new_reviews_total = int(delta_positive_only.sum())
-        new_reviews_mean = round(float(new_reviews_total / n_listings), 3) if n_listings > 0 else 0.0
-        pct_listing_with_new = round(float((delta > 0).sum() / n_listings * 100), 2)
-        pct_change_total = round(float((new_reviews_total / total_rev_prev * 100)), 2) if total_rev_prev > 0 else 0.0
-        n_negative = int((delta < 0).sum())
-        
-        results.append({
-            "period": f"{snap_prev} -> {snap_curr}",
-            "n_listing": n_listings,
-            "new_reviews_total": new_reviews_total,
-            "new_reviews_mean": new_reviews_mean,
-            "pct_listing_with_new": pct_listing_with_new,
-            "pct_change_total": pct_change_total,
-            "n_negative": n_negative,
-            "snap_prev": snap_prev,
-            "snap_curr": snap_curr
-        })
-        
-    return pd.DataFrame(results)
 
 def kpi_room_type(ls, moc_cuoi):    #K9 - K10
     ls_last = ls[(ls["snapshot"] == moc_cuoi) & (ls["room_type"].notna()) 
@@ -224,12 +163,11 @@ def dinh_nghia(tien_te, min_reviews):
         ("K2", "Điểm value trung bình theo borough", "Biết borough nào khách thấy đáng tiền", f"mean(review_scores_value) với number_of_reviews >= {min_reviews}", "điểm 0-5", "kpi_borough_value.csv"),
         ("K3", "Borough giá tốt + value cao", "Gợi ý borough nên chọn", "Đạt: giá/người <= trung vị TP và value >= trung bình TP (Chắc chắn: cả khoảng tin cậy 95% cũng vượt ngưỡng)", "phân loại", "kpi_borough_value.csv"),
         ("K4", "Tỷ lệ listing chưa có review, điểm rating theo mốc", "Theo dõi chất lượng dữ liệu đánh giá", "mean(number_of_reviews == 0) và mean(review_scores_rating)", "% và điểm", "kpi_snapshot.csv"),
-        ("K5", "Độ sẵn sàng theo tháng và mùa", "Biết lúc nào còn nhiều chỗ trống", "số ngày available = t / tổng số ngày hợp lệ, theo (mốc, tháng) và (mốc, mùa)", "%", "kpi_availability_month.csv, kpi_availability_season.csv"),
-        ("K6", "Độ thay đổi số đánh giá qua từng quý", "Đo lường mức độ hoạt động và khả năng review bị gỡ (Δ < 0)", "Δ = reviews(sau) - reviews(trước); báo cáo tổng số review mới và trung bình Δ trên mỗi listing", "review/listing/quý", "kpi_review_change.csv"),
-        ("K7", "Tỷ lệ review chê tiếng ồn theo borough", "Cảnh báo borough hay bị phàn nàn về ồn", "số review có khía cạnh 'độ ồn' bị chê / số review đã gán nhãn LLM", "%", "kpi_complaints_borough.csv"),
-        ("K8", "Tỷ lệ review chê an toàn theo borough", "Cảnh báo borough hay bị phàn nàn về an toàn", "số review có khía cạnh 'an toàn' bị chê / số review đã gán nhãn LLM", "%", "kpi_complaints_borough.csv"),
-        ("K9", "Tỷ lệ Entire home/apt và Private room trên mỗi khu vực và giá trung vị của mỗi loại phòng trong khu vực đó", "Xem loại phòng nào chiếm tỷ lệ nhiều hơn và có giá tốt hơn trong khu vực", "groupby neighbourhood_cleansed, mean(roomtype), median(roomtype)", "%, GBP", "kpi_room_type.csv"),
-        ("K10", "Độ chênh lệch giá trung vị của từng loại phòng theo từng khu vực với giá trung vị theo cả thành phố", "Xem giá các loại phòng của khu vực có cao hơn so với mặt bằng chung của toàn thành phố không", "median(roomtype_neighbourhood) / median(roomtype_city)", "%", "kpi_room_type.csv")
+        ("K5", "Độ sẵn sàng theo tháng", "Biết lúc nào còn nhiều chỗ trống", "số ngày available = t / tổng số ngày hợp lệ, theo (mốc, tháng)", "%", "kpi_availability_month.csv"),
+        ("K6", "Tỷ lệ review chê tiếng ồn theo borough", "Cảnh báo borough hay bị phàn nàn về ồn", "số review có khía cạnh 'độ ồn' bị chê / số review đã gán nhãn LLM", "%", "kpi_complaints_borough.csv"),
+        ("K7", "Tỷ lệ review chê an toàn theo borough", "Cảnh báo borough hay bị phàn nàn về an toàn", "số review có khía cạnh 'an toàn' bị chê / số review đã gán nhãn LLM", "%", "kpi_complaints_borough.csv"),
+        ("K8", "Tỷ lệ Entire home/apt và Private room trên mỗi khu vực và giá trung vị của mỗi loại phòng trong khu vực đó", "Xem loại phòng nào chiếm tỷ lệ nhiều hơn và có giá tốt hơn trong khu vực", "groupby neighbourhood_cleansed, mean(roomtype), median(roomtype)", "%, GBP", "kpi_room_type.csv"),
+        ("K9", "Độ chênh lệch giá trung vị của từng loại phòng theo từng khu vực với giá trung vị theo cả thành phố", "Xem giá các loại phòng của khu vực có cao hơn so với mặt bằng chung của toàn thành phố không", "median(roomtype_neighbourhood) / median(roomtype_city)", "%", "kpi_room_type.csv")
     ], columns=["kpi_id", "kpi_name", "target", "formula", "unit", "output_file"])
 
 
@@ -260,12 +198,10 @@ def tinh_kpi(config_path, root=ROOT):
 
     kq = {"borough_value": kpi_borough(ls, last_snap, min_n, min_reviews, seed)}
     
-    # Tính toán K6 Mới (Review Change)
-    kq["review_change"] = kpi_review_change(ls, cac_moc)
     
     # Tính toán K4-K5 (Thiếu Calendar sẽ văng lỗi tại đây theo đúng rule gốc)
-    moc, thang, mua = kpi_thoi_gian(ls, cac_moc, last_snap, proc)
-    kq.update({"snapshot": moc, "availability_month": thang, "availability_season": mua})
+    moc, thang = kpi_thoi_gian(ls, cac_moc, last_snap, proc)
+    kq.update({"snapshot": moc, "availability_month": thang})
 
     kq["room_type"] = kpi_room_type(ls, last_snap)
     
@@ -287,8 +223,6 @@ def tinh_kpi(config_path, root=ROOT):
           f"{n_chac + n_sat} ({n_chac} chắc chắn, {n_sat} sát ngưỡng) | trung vị giá/người TP "
           f"{b['city_ppp_median'].iloc[0]} {tien_te}, value TB TP {b['city_value_mean'].iloc[0]}")
     
-    print("\n[K6] Độ tăng trưởng review qua các quý (kpi_review_change.csv):")
-    print(kq["review_change"][["period", "n_listing", "new_reviews_total", "new_reviews_mean", "pct_listing_with_new", "n_negative"]].to_string(index=False))
     
     return kq
 
