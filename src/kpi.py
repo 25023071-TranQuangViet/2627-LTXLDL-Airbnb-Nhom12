@@ -176,7 +176,7 @@ def kpi_review_change(ls, cac_moc):
         
     return pd.DataFrame(results)
 
-def kpi_room_type(ls, moc_cuoi):
+def kpi_room_type(ls, moc_cuoi):    #K9 - K10
     ls_last = ls[(ls["snapshot"] == moc_cuoi) & (ls["room_type"].notna()) 
                 & (ls["neighbourhood_cleansed"].notna()) 
                 & (~ls["flag_missing_price_last"])]
@@ -228,6 +228,8 @@ def dinh_nghia(tien_te, min_reviews):
         ("K6", "Độ thay đổi số đánh giá qua từng quý", "Đo lường mức độ hoạt động và khả năng review bị gỡ (Δ < 0)", "Δ = reviews(sau) - reviews(trước); báo cáo tổng số review mới và trung bình Δ trên mỗi listing", "review/listing/quý", "kpi_review_change.csv"),
         ("K7", "Tỷ lệ review chê tiếng ồn theo borough", "Cảnh báo borough hay bị phàn nàn về ồn", "số review có khía cạnh 'độ ồn' bị chê / số review đã gán nhãn LLM", "%", "kpi_complaints_borough.csv"),
         ("K8", "Tỷ lệ review chê an toàn theo borough", "Cảnh báo borough hay bị phàn nàn về an toàn", "số review có khía cạnh 'an toàn' bị chê / số review đã gán nhãn LLM", "%", "kpi_complaints_borough.csv"),
+        ("K9", "Tỷ lệ Entire home/apt và Private room trên mỗi khu vực và giá trung vị của mỗi loại phòng trong khu vực đó", "Xem loại phòng nào chiếm tỷ lệ nhiều hơn và có giá tốt hơn trong khu vực", "groupby neighbourhood_cleansed, mean(roomtype), median(roomtype)", "%, GBP", "kpi_room_type.csv"),
+        ("K10", "Độ chênh lệch giá trung vị của từng loại phòng theo từng khu vực với giá trung vị theo cả thành phố", "Xem giá các loại phòng của khu vực có cao hơn so với mặt bằng chung của toàn thành phố không", "median(roomtype_neighbourhood) / median(roomtype_city)", "%", "kpi_room_type.csv")
     ], columns=["kpi_id", "kpi_name", "target", "formula", "unit", "output_file"])
 
 

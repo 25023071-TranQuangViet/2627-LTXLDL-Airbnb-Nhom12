@@ -1,0 +1,4 @@
+neighbourhood_cleansed,n_reviews,n_noise,n_safety,noise_pct,safety_pct,reliable
+Islington,1,0,0,0.0,0.0,False
+Kensington and Chelsea,1,0,0,0.0,0.0,False
+Richmond upon Thames,1,0,0,0.0,0.0,False
