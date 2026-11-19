@@ -74,52 +74,55 @@ def kpi_borough(ls, last_snap, min_n, min_reviews, seed):
 
 
 # ----------------------------------------------------------------------------- K4 & K5: THỜI GIAN VÀ ĐỘ SẴN SÀNG
-def kpi_thoi_gian(ls, cac_moc, price_max, proc):
-    """Theo mốc chụp: giá, tỷ lệ chưa có review, độ sẵn sàng; và độ sẵn sàng theo tháng / mùa."""
+def kpi_thoi_gian(ls, cac_moc, last_snap, proc):
+    """K4 & K5: Tổng hợp tỷ lệ chưa có review và độ sẵn sàng từ Calendar (đã xóa K6 cũ price_median)."""
     theo_moc, theo_thang, theo_mua = [], [], []
-    all_snap_cal = []
     for snap in cac_moc:
         s = ls[(ls["snapshot"] == snap) & ls["id"].notna() & ~ls["flag_duplicate"]]
-        # price_raw_num có ở mọi mốc (price_clean chỉ có mốc cuối); mốc nào rỗng (vd. 2025-12-13) thì để NaN
-        gia = s["price_raw_num"].where((s["price_raw_num"] > 0) & (s["price_raw_num"] <= price_max))
-        ppp = (gia / s["accommodates"].where(s["accommodates"] > 0)).dropna()
+        
+        # Chỉ tính ppp ở mốc cuối
+        if snap == last_snap:
+            gia = s["price_clean"].where(s["price_clean"] > 0)
+            ppp = (gia / s["accommodates"].where(s["accommodates"] > 0)).dropna()
+        else:
+            ppp = pd.Series(dtype=float)
 
         p_cal = proc / snap / "calendar_cleaned.csv"
+        # Bọc file Calendar bằng exists() như thống nhất ở lần trước
         if not p_cal.exists():
             raise FileNotFoundError(f"Chưa có {p_cal}; chạy qa.py trước")
-        cal = pd.read_csv(p_cal, usecols=["listing_id", "date", "available", "flag_date_missing",
-                                          "flag_available_missing", "flag_duplicated", "flag_not_in_snapshot"])
-        cal = cal[~cal["flag_date_missing"] & ~cal["flag_available_missing"] & ~cal["flag_duplicated"] & ~cal["flag_not_in_snapshot"]].copy()
+            
+        cal = pd.read_csv(p_cal, usecols=["date", "available", "flag_date_missing", "flag_available_missing", "flag_duplicated"])
+        cal = cal[~cal["flag_date_missing"] & ~cal["flag_available_missing"] & ~cal["flag_duplicated"]].copy()
         cal["a"] = cal["available"].astype("string").str.lower().map({"true": 1.0, "false": 0.0})
         cal["date"] = pd.to_datetime(cal["date"], errors="coerce")
         cal = cal.dropna(subset=["a", "date"])
-        all_snap_cal.append(cal)
+
+        # Bỏ price_median (K6 cũ)
         theo_moc.append({
-            "snapshot": snap, "n_listing": len(s), "n_price": int(gia.notna().sum()),
-            "price_median": round(float(gia.median()), 2) if gia.notna().any() else np.nan,
+            "snapshot": snap, "n_listing": len(s),
             "ppp_median": round(float(ppp.median()), 2) if len(ppp) else np.nan,
             "pct_no_reviews": round(float((s["number_of_reviews"] == 0).mean() * 100), 2),
             "rating_mean": round(float(s["review_scores_rating"].mean()), 3),
             "availability_pct": round(float(cal["a"].mean() * 100), 2), "n_calendar_days": len(cal),
         })
         
-    calendar = pd.concat(all_snap_cal, ignore_index=True)
-    trung_date_khac_moc = calendar.duplicated(subset = ["listing_id", "date"], keep = "last")
-    cal = calendar[~trung_date_khac_moc]
-    cal = cal.sort_values(["listing_id", "date"]).reset_index(drop=True)
-    cal["date_thang"] = cal["date"].dt.strftime("%Y-%m")
-    a_thang = cal.groupby("date_thang")["a"].agg(n_days = "size", a_sum = "sum", a_pct = "mean").reset_index()
-    a_thang["availability_pct"] = a_thang["a_pct"] * 100
-    theo_thang = a_thang[["date_thang", "n_days", "a_sum", "availability_pct"]]
+        cal["date_thang"] = cal["date"].dt.strftime("%Y-%m")
+        a_thang = cal.groupby("date_thang")["a"].agg(n_days = "size", a_pct = "mean").reset_index()
+        a_thang["availability_pct"] = a_thang["a_pct"] * 100
+        a_thang["snapshot"] = snap
+        theo_thang.append(a_thang[["snapshot", "date_thang", "availability_pct", "n_days"]])
+        
+        cal["season"] = cal["date"].dt.month.map(MUA)
+        a_mua = cal.groupby("season")["a"].agg(n_days = "size", a_pct = "mean").reset_index()
+        a_mua["availability_pct"] = a_mua["a_pct"] * 100
+        a_mua["snapshot"] = snap
+        theo_mua.append(a_mua[["snapshot", "season", "availability_pct", "n_days"]])
     
-    cal["year"] = cal["date"].dt.year
-    cal["season"] = cal["date"].dt.month.map(MUA)
-
-    a_mua = cal.groupby(["season", "year"])["a"].agg(n_days = "size", a_sum = "sum", a_pct = "mean").reset_index()
-    a_mua["availability_pct"] = a_mua["a_pct"] * 100
-    theo_mua = a_mua[["season", "year", "a_sum", "availability_pct", "n_days"]]
-    return (pd.DataFrame(theo_moc), theo_thang,
-            theo_mua.sort_values(["year", "season"]).reset_index(drop=True))
+    thang = pd.concat(theo_thang, ignore_index=True)        
+    mua = pd.concat(theo_mua, ignore_index=True)
+    return (pd.DataFrame(theo_moc), thang,
+            mua.sort_values(["snapshot", "season"]).reset_index(drop=True))
 
 
 # ----------------------------------------------------------------------------- K6 MỚI: ĐỘ TĂNG TRƯỞNG REVIEW
