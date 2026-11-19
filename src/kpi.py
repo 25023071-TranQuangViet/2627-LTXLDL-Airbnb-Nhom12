@@ -154,7 +154,7 @@ def kpi_room_type(ls, moc_cuoi):    #K9 - K10
     a_thang_entire["availability_pct"] = a_thang_entire["a_pct"] * 100
     a_thang_private = cal_private.groupby("date_thang")["available"].agg(n_days = "size", a_pct = "mean").reset_index()
     a_thang_private["availability_pct"] = a_thang_private["a_pct"] * 100
-    return pd.DataFrame(kieu_theo_vung), a_thang_entire, a_thang_entire
+    return pd.DataFrame(kieu_theo_vung), a_thang_entire, a_thang_private
         
 
 # ----------------------------------------------------------------------------- K7-K8: ỒN / AN TOÀN (LLM)
