@@ -392,10 +392,10 @@ def process_calendar(config_path, root=PROJECT_PATH):
     
     use_cols = ['listing_id', 'date', 'available', 'minimum_nights', 'maximum_nights']
     chunk_size = 500_000
-    
+    ids_set = set(listing_loc["listing_id"])
     all_snapshot_dfs = []
 
-    # 1. Đọc và lọc từng mốc theo Chunk
+    # Đọc và lọc từng mốc theo Chunk
     for date_snap in snapshot:
         calendar_path = root / "data" / "raw" / str(date_snap) / "calendar.csv.gz"
         if not calendar_path.exists():
@@ -403,34 +403,37 @@ def process_calendar(config_path, root=PROJECT_PATH):
             
         chunks_for_snap = []
         for chunk in pd.read_csv(calendar_path, compression='gzip', dtype={'listing_id': 'str'}, usecols=use_cols, chunksize=chunk_size):
-            # Merge lọc theo đúng listing_id của nhóm
-            chunk_ghep = chunk.merge(listing_loc, on='listing_id', how='inner').copy()
-            if not chunk_ghep.empty:
-                chunks_for_snap.append(chunk_ghep)
+            # Lọc chunk có listing_id
+            chunk =chunk[chunk["listing_id"].isin(ids_set)]
+            if not chunk.empty:
+                chunks_for_snap.append(chunk)
                 
         if chunks_for_snap:
             snap_df = pd.concat(chunks_for_snap, ignore_index=True)
-            snap_df["snapshot"] = date_snap
-            all_snapshot_dfs.append(snap_df)
-
+        # Merge với listing_loc
+        snap_df= snap_df.merge(listing_loc, on= "listing_id", how="right",indicator=True)
+        snap_df["flag_not_in_snapshot"]=snap_df["_merge"].eq("right_only")
+        snap_df=snap_df.drop(columns="_merge")
+        snap_df["snapshot"]=date_snap
+        all_snapshot_dfs.append(snap_df)
     if not all_snapshot_dfs:
         raise ValueError("Không tìm thấy dữ liệu calendar hợp lệ ở các mốc!")
 
-    # 2. Concat toàn bộ thành 1 DataFrame tổng
+    # Concat toàn bộ thành 1 DataFrame tổng
     calendar = pd.concat(all_snapshot_dfs, ignore_index=True)
 
-    # 3. Ép kiểu dữ liệu và làm sạch
+    # Ép kiểu dữ liệu và làm sạch
     calendar["available"] = calendar["available"].astype(str).str.lower().map({'t': True, 'f': False})
     calendar['date'] = pd.to_datetime(calendar['date'], format='%Y-%m-%d', errors="coerce")
     
     for num_col in ['minimum_nights', 'maximum_nights']:
         calendar[num_col] = pd.to_numeric(calendar[num_col], errors='coerce')
 
-    # 4. Kiểm tra Null, Ngoại lai, Điền chặn (Capping) & Trùng lặp
+    # Kiểm tra Null, Ngoại lai, Điền chặn (Capping) & Trùng lặp
     cap_limit = config['qa']['min_nights_cap']
     
-    calendar['flag_date_missing'] = calendar['date'].isna()
-    calendar['flag_available_missing'] = calendar['available'].isna()
+    calendar['flag_date_missing'] = calendar['date'].isna() & ~calendar["flag_not_in_snapshot"]
+    calendar['flag_available_missing'] = calendar['available'].isna() & ~calendar["flag_not_in_snapshot"]
     
     calendar['flag_min_max_outlier'] = (
         (calendar['minimum_nights'] > cap_limit) | 
@@ -445,11 +448,24 @@ def process_calendar(config_path, root=PROJECT_PATH):
     calendar['flag_min_gt_max'] = (calendar['minimum_nights'] > calendar['maximum_nights'])
     calendar['flag_duplicated'] = calendar.duplicated(subset=['listing_id', 'date', 'snapshot'], keep='first')
 
-    # 5. Tạo Báo cáo QA (Sử dụng hàm quy_tac chuẩn)
+    # Tạo Báo cáo QA (Sử dụng hàm quy_tac chuẩn)
     qa_cal_rules = [
         quy_tac(
+                "calendar",
+                "CA1_Not_In_Snapshot",
+                "Thiếu dữ liệu (Missing)",
+                "Khi merge với listing_loc ['listing_id'] chỉ có đánh dấu xuất hiện bên phía listing_loc ",
+                "Listing được phân công nhưng không có lịch ở mốc đó (bị gỡ hoặc chưa tạo)",
+                "Giữ 1 dòng giữ chỗ cho mỗi listing thiếu, gắn cờ flag_not_in_snapshot; loại khỏi mọi tính toán KPI",
+                int(calendar['flag_not_in_snapshot'].sum()),
+                round((calendar['flag_not_in_snapshot'].sum()) / len(calendar) * 100, 2),
+                "Số cặp (listing, mốc) có dữ liệu ",
+                int(len(listing_loc) * len(snapshot)),
+                int(len(listing_loc) * len(snapshot)  - calendar["flag_not_in_snapshot"].sum())
+        ),
+        quy_tac(
             "calendar",
-            "R11_Missing_Date_Available",
+            "CA2_Missing_Date_Available",
             "Thiếu dữ liệu (Missing)",
             "date IS NULL hoặc available IS NULL",
             "Khuyết thông tin ngày hoặc trạng thái lịch",
@@ -462,7 +478,7 @@ def process_calendar(config_path, root=PROJECT_PATH):
         ),
         quy_tac(
             "calendar",
-            "R12_Min_Max_Nights_Outliers",
+            "CA3_Min_Max_Nights_Outliers",
             "Ngoại lai (Outliers)",
             f"minimum_nights < 0 hoặc minimum_nights > {cap_limit}",
             "Số đêm tối thiểu/tối đa âm hoặc vượt trần cấu hình",
@@ -475,7 +491,7 @@ def process_calendar(config_path, root=PROJECT_PATH):
         ),
         quy_tac(
             "calendar",
-            "R13_Min_Nights_Greater_Than_Max",
+            "CA4_Min_Nights_Greater_Than_Max",
             "Mâu thuẫn logic (Logic Inconsistency)",
             "minimum_nights > maximum_nights",
             "Số đêm tối thiểu thiết lập lớn hơn số đêm tối đa",
@@ -488,7 +504,7 @@ def process_calendar(config_path, root=PROJECT_PATH):
         ),
         quy_tac(
             "calendar",
-            "R14_Duplicate_Calendar_Entries",
+            "CA5_Duplicate_Calendar_Entries",
             "Trùng lặp (Duplicates)",
             "Trùng (listing_id, date, snapshot)",
             "Nhiều bản ghi ngày lịch trùng lặp trong cùng một mốc",
@@ -502,14 +518,12 @@ def process_calendar(config_path, root=PROJECT_PATH):
     ]
     
     qa_report_calendar = pd.DataFrame(qa_cal_rules)
-
-    # --- 6. XUẤT TỆP RA CÁC THƯ MỤC CỤ THỂ (GIỐNG MẪU LISTINGS) ---
     
-    # 6.1 Xuất file tổng hợp vào data/processed/
+    # Xuất file tổng hợp vào data/processed/
     combined_out = proc_dir / "calendar_cleaned.csv"
     calendar.to_csv(combined_out, index=False, encoding="utf-8")
     
-    # 6.2 Lặp qua từng mốc snapshot để tạo thư mục riêng và lưu calendar_cleaned.csv
+    # Lặp qua từng mốc snapshot để tạo thư mục riêng và lưu calendar_cleaned.csv
     for date in snapshot:
         snap_dir = proc_dir / str(date)
         snap_dir.mkdir(parents=True, exist_ok=True)
@@ -592,21 +606,25 @@ def process_reviews(config_path, root: Path = PROJECT_PATH):
 
         # thiếu:  
         
-        df["flag_empty_comment"] = ~df["flag_not_in_snapshot"] & (df["comments"].isna() | df["comments"].str.strip().str.lower().isin(NAN_TOKENS))
+        df["flag_empty_comment"] = ~df["flag_not_in_snapshot"] & (df["comments"].isna() | df["comments"].str.strip().str.lower().isin(NAN_TOKENS) | df["comments"].str.strip().eq("."))
 
-
+        # trùng lặp review_id trong df
+        
+        df["flag_id_duplicates"] = df.duplicated(subset=['review_id', 'date'], keep='first')
+        
         # Báo cáo QA:
         use = ~(df["flag_empty_comment"] | df["flag_not_in_snapshot"])
+        df["usable_for_llm"] = use
         con_lai = df[~df["flag_not_in_snapshot"]]
         qa_rules = [
-                quy_tac("REV1_Not_In_Snapshot", "Thiếu dữ liệu (Missing)",
+                quy_tac("reviews" ,"REV1_Not_In_Snapshot", "Thiếu dữ liệu (Missing)",
                         "review_id trong reviews-loc.csv không có trong tệp reviews của mốc",
                         "Review tìm được ở mốc nào thì mới đưa vào mốc đó",
                         "Giữ 1 dòng, gắn cờ flag_not_in_snapshot",
                         df["flag_not_in_snapshot"].sum(), df["flag_not_in_snapshot"].mean(), "Số review tìm thấy",
                         int(n_total), int(len(con_lai))),
                 
-                quy_tac("REV2_Html_In_Comments", "Kiểu sai (Wrong Type)",
+                quy_tac("reviews", "REV2_Html_In_Comments", "Kiểu sai (Wrong Type)",
                         "comments chứa thẻ <br/> hoặc khoảng trắng thừa",
                         "Nội dung gốc lưu dạng HTML thô",
                         "Thay <br/> bằng khoảng trắng, gộp khoảng trắng -> comments",
@@ -614,7 +632,7 @@ def process_reviews(config_path, root: Path = PROJECT_PATH):
                         n_html_after),
 
 
-                quy_tac("REV3_Empty_Comment", "Thiếu dữ liệu (Missing)",
+                quy_tac("reviews", "REV3_Empty_Comment", "Thiếu dữ liệu (Missing)",
                         "comments rỗng sau khi làm sạch",
                         "Review không có nội dung thì LLM không phân loại được ồn/an toàn",
                         "Gắn cờ flag_empty_comment; loại khỏi mẫu LLM khi tính KPI",
@@ -622,13 +640,20 @@ def process_reviews(config_path, root: Path = PROJECT_PATH):
                         len(df.loc[~df["flag_not_in_snapshot"] ,"comments"]),
                         (~df["flag_empty_comment"]).sum()),
 
-                quy_tac("REV4_Short_Comment", "Ngoại lai (Outliers)",
+                quy_tac("reviews", "REV4_Short_Comment", "Ngoại lai (Outliers)",
                         f"độ dài comments_clean < {config["qa"]["min_chars"]} ký tự",
                         "Quá ngắn để phân loại",
                         "Gắn cờ flag_short_comment",
                         df["flag_short_comment"].sum(), df["flag_short_comment"].mean(), "Độ dài review trung bình (ký tự)",
                         round(float(con_lai["comments"].str.len().mean()), 1),
                         round(float(con_lai.loc[~con_lai["flag_short_comment"], "comments"].str.len().mean()), 1)),
+                quy_tac("reviews", "RE5_Duplicates", "Trùng lặp",
+                        "bị trùng lặp review_id giữa các mốc sau khi ghép",
+                        "bị trùng lặp review_id giữa các mốc sau khi ghép",
+                        "gắn cờ trùng lặp",
+                        df["flag_id_duplicates"].sum(), df["flag_id_duplicates"].mean(), "Số review độc nhất",
+                        len(df),
+                        (~df["flag_id_duplicates"]).sum())
         ]
         
         report = pd.DataFrame(qa_rules)
@@ -636,7 +661,6 @@ def process_reviews(config_path, root: Path = PROJECT_PATH):
 
 
         # Lưu kết quả:
-        df["usable_for_llm"] = use
 
         cot_ra = [
                 'snapshot',
@@ -644,21 +668,22 @@ def process_reviews(config_path, root: Path = PROJECT_PATH):
                 'review_id',
                 'date',
                 'reviewer_id',
-                'comments',
+                'comments_fixed',
                 'listing_id_loc',
                 'Mẫu LLM',
                 'Nhãn tay',
                 'flag_not_in_snapshot',
                 'flag_short_comment',
                 'flag_empty_comment',
+                "flag_id_duplicates",
                 'flag_LLM',
                 'flag_human',
                 'usable_for_llm'
                 ]
-        df_out = df[cot_ra]
+        df_out = con_lai[cot_ra]
         combined_out = proc_dir / "reviews_cleaned.csv"
         df_out.to_csv(combined_out, index=False, encoding="utf-8")
-        for date in snapshot:
+        for date in snapshots:
                 snap_dir = proc_dir / str(date)
                 snap_dir.mkdir(parents=True, exist_ok=True)
                 review_snap = df_out.loc[df_out["snapshot"] == date]
