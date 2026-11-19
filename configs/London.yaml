@@ -16,7 +16,7 @@ llm:
   max_calls_per_run: 500
   price_input_per_m_usd: 0.30
   price_output_per_m_usd: 2.50
-  aspects: [vị trí, sạch sẽ, chủ nhà, giá trị, tiện nghi, độ ồn, an toàn]
+  aspects: ["location", "cleanliness", "host", "value", "noise", "amenities", "safety"]
   input: data/processed/reviews_cleaned.csv
   cache: data/processed/llm_cache.json
 
