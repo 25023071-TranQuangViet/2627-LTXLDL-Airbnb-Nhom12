@@ -138,7 +138,23 @@ def kpi_room_type(ls, moc_cuoi):    #K9 - K10
                                "chenh_lech_gia_loai_phong_trong_vung": lech_trong_vung,
                                "chi_so_gia_tuong_doi_cua_entire_so_voi_city": gia_tuong_doi_en,
                                "chi_so_gia_tuong_doi_cua_private_so_voi_city": gia_tuong_doi_pri})
-    return pd.DataFrame(kieu_theo_vung)
+    
+    p_cal = ROOT / "data" / "processed" / "calendar_cleaned.csv"
+    calendar = pd.read_csv(p_cal, usecols=["listing_id", "date", "available", "flag_date_missing",
+                                            "flag_available_missing", "flag_duplicated", "flag_not_in_snapshot"])
+    calendar["trung_ngay_in_moc"] = calendar.duplicated(subset = ["listing_id", "date"], keep = "last")
+    cal = calendar[~calendar["trung_ngay_in_moc"]]
+    cal["date"] = pd.to_datetime(cal["date"], errors="coerce")
+    cal["date_thang"] = cal["date"].dt.strftime("%Y-%m")
+    ls_room = ls.loc[(ls["room_type"].notna()), ["listing_id", "room_type"]]
+    cal_room_type = cal.merge(ls_room, on = "listing_id", how = "inner")
+    cal_entire = cal_room_type[cal_room_type["room_type"] == "Entire home/apt"]
+    cal_private = cal_room_type[cal_room_type["room_type"] == "Private room"]
+    a_thang_entire = cal_entire.groupby("date_thang")["available"].agg(n_days = "size", a_pct = "mean").reset_index()
+    a_thang_entire["availability_pct"] = a_thang_entire["a_pct"] * 100
+    a_thang_private = cal_private.groupby("date_thang")["available"].agg(n_days = "size", a_pct = "mean").reset_index()
+    a_thang_private["availability_pct"] = a_thang_private["a_pct"] * 100
+    return pd.DataFrame(kieu_theo_vung), a_thang_entire, a_thang_entire
         
 
 # ----------------------------------------------------------------------------- K7-K8: ỒN / AN TOÀN (LLM)
@@ -203,7 +219,8 @@ def tinh_kpi(config_path, root=ROOT):
     moc, thang = kpi_thoi_gian(ls, cac_moc, last_snap, proc)
     kq.update({"snapshot": moc, "availability_month": thang})
 
-    kq["room_type"] = kpi_room_type(ls, last_snap)
+    room_type_median, entire, private = kpi_room_type(ls, last_snap)
+    kq.update({"room_type_median": room_type_median, "entire_availability": entire, "private_availability": private})
     
     p_llm = proc / "llm_results.csv"
     if p_llm.exists():
