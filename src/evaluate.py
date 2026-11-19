@@ -182,7 +182,7 @@ def run_evaluate(config_path, root=PROJECT_PATH, make_template=False):
 
     if make_template:
         rv = tai_reviews_cleaned(cfg, root)
-        mau = rv.loc[rv["flag_human"], ["review_id", "comments_fixed"]]
+        mau = rv.loc[(rv["flag_human"]) & (~rv["flag_id_duplicates"]), ["review_id", "comments_fixed"]]
         for cot in ("sentiment", "aspects_positive", "aspects_negative", "language"):
             mau[cot] = ""
         samples.mkdir(parents=True, exist_ok=True)
