@@ -4,6 +4,7 @@ from src.download import download_data
 from src.qa import run_qa
 from src.kpi import tinh_kpi
 from src.baseline import run_baseline
+from src.llm import run_llm
 def run_pipeline(config_path, skip_llm = False):
     download_data(config_path)
 
@@ -12,6 +13,8 @@ def run_pipeline(config_path, skip_llm = False):
     tinh_kpi(config_path)
     
     run_baseline(config_path)
+    
+    run_llm(config_path, skip_llm)
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", type = str)
