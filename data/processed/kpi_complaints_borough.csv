@@ -1,0 +1,32 @@
+neighbourhood_cleansed,n_reviews,n_noise,n_safety,noise_pct,safety_pct,reliable
+Hackney,40,6,1,15.0,2.5,True
+Haringey,10,1,1,10.0,10.0,True
+Camden,84,8,0,9.52,0.0,True
+Ealing,11,1,0,9.09,0.0,True
+Brent,25,2,0,8.0,0.0,True
+Hammersmith and Fulham,62,4,1,6.45,1.61,True
+Tower Hamlets,95,6,0,6.32,0.0,True
+Westminster,129,5,1,3.88,0.78,True
+Kensington and Chelsea,133,5,0,3.76,0.0,True
+Richmond upon Thames,30,1,1,3.33,3.33,True
+Southwark,62,2,1,3.23,1.61,True
+Lambeth,49,1,0,2.04,0.0,True
+Barnet,13,0,0,0.0,0.0,True
+Croydon,19,0,0,0.0,0.0,True
+Greenwich,25,0,0,0.0,0.0,True
+Havering,15,0,0,0.0,0.0,True
+Hounslow,12,0,0,0.0,0.0,True
+Islington,68,0,0,0.0,0.0,True
+Merton,10,0,0,0.0,0.0,True
+Newham,12,0,0,0.0,0.0,True
+Waltham Forest,11,0,0,0.0,0.0,True
+Wandsworth,53,0,0,0.0,0.0,True
+Barking and Dagenham,1,0,0,0.0,0.0,False
+Bexley,3,0,0,0.0,0.0,False
+Bromley,6,0,0,0.0,0.0,False
+City of London,3,0,0,0.0,0.0,False
+Enfield,1,0,0,0.0,0.0,False
+Kingston upon Thames,4,0,0,0.0,0.0,False
+Lewisham,9,0,0,0.0,0.0,False
+Redbridge,4,0,0,0.0,0.0,False
+Sutton,1,0,0,0.0,0.0,False

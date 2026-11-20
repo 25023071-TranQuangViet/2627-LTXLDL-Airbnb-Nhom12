@@ -1,6 +1,23 @@
 city: London
 data_root: united-kingdom/england/london
-snapshots: [2025-09-14,2025-12-13, 2026-03-21, 2026-06-19]
+snapshots: [2025-09-14, 2025-12-13, 2026-03-21, 2026-06-19]
+currency: GBP
 qa:
+  price_max_gbp: 5000
   min_nights_cap: 365
   dedupe_keys: [id, last_scraped]
+  min_chars: 50
+
+llm:
+  provider: gemini
+  model: gemini-3.5-flash-lite               # model tuỳ chọn
+  api_key_env: GEMINI_API_KEY
+  sample_size: 1000               # nhóm giải thích cỡ mẫu
+  requests_per_minute: 15        
+  max_calls_per_run: 500
+  price_input_per_m_usd: 0.30
+  price_output_per_m_usd: 2.50
+  aspects: ["location", "cleanliness", "host", "value", "noise", "amenities", "safety"]
+  cache: data/processed/llm_cache.jsonl
+
+seed: 42

@@ -1,0 +1,4 @@
+﻿pham_vi,so_review,token_vao_tb,token_ra_tb,chi_phi_usd,ngay_o_goi_mien_phi,gia_vao_usd_moi_trieu,gia_ra_usd_moi_trieu,model
+mẫu của nhóm,1000,231.4,56.2,0.21,2.0,0.3,2.5,gemini-3.5-flash-lite
+100.000 review,100000,231.4,56.2,21.0,200.0,0.3,2.5,gemini-3.5-flash-lite
+toàn bộ review thành phố,2241353,231.4,56.2,470.59,4482.7,0.3,2.5,gemini-3.5-flash-lite
