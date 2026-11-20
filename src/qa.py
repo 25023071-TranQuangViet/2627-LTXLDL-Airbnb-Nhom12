@@ -186,29 +186,25 @@ def process_listings(config_path, root = PROJECT_PATH):
         listings["flag_missing_bath"] = (listings["bathrooms_clean"].isna())
 # fillna
         mask_last = listings["snapshot"] == last_snap
-        listings["price_clean_fillna"] = np.nan
-        listings.loc[mask_last, "price_clean_fillna"] = (
-                listings[mask_last].groupby(["room_type", "accommodates"])["price_clean"]
-                .transform(lambda s: s.fillna(s.median()))
-        )
+        listings["price_clean_fillna"] = listings["price_clean"]
+        tv_nhom = listings[mask_last].groupby(["room_type", "accommodates"])["price_clean"].transform("median")
+        listings.loc[mask_last, "price_clean_fillna"] = listings.loc[mask_last, "price_clean"].fillna(tv_nhom)
+
         # Nhóm không có giá nào -> dùng trung vị toàn mốc cuối
-        listings.loc[mask_last, "price_clean_fillna"] = listings.loc[mask_last, "price_clean_fillna"].fillna(
-                listings.loc[mask_last, "price_clean"].median()
-        )
+        listings.loc[mask_last, "price_clean_fillna"] = listings.loc[mask_last, "price_clean_fillna"].fillna(listings.loc[mask_last, "price_clean"].median())
         
-        listings["bedrooms_clean"] = listings.groupby(["room_type", "accommodates"])["bedrooms"].transform(
-        lambda s: s.fillna(s.median())
-        )
+        bedroom_nhom = listings.groupby(["room_type", "accommodates"])["bedrooms"].transform("median")
+        listings["bedrooms_clean"] = listings["bedrooms"].fillna(bedroom_nhom)
         listings["bedrooms_clean"] = listings["bedrooms_clean"].fillna(listings["bedrooms_clean"].median())
 
-        listings["beds_clean"] = listings.groupby(["room_type", "accommodates"])["beds"].transform(
-        lambda s: s.fillna(s.median())
-        )
+        bed_nhom = listings.groupby(["room_type", "accommodates"])["beds"].transform("median")
+        listings["beds_clean"] = listings["beds"].fillna(bed_nhom)
         listings["beds_clean"] = listings["beds_clean"].fillna(listings["beds_clean"].median())
 
-        listings["bathrooms_clean"] = listings.groupby("room_type")["bathrooms_clean"].transform(
-        lambda s: s.fillna(s.median())
-        )
+        bathroom_nhom = listings.groupby(["room_type"])["bathrooms_clean"].transform("median")
+        listings["bathrooms_clean"] = listings["bathrooms_clean"].fillna(bathroom_nhom)
+        listings["bathrooms_clean"] = listings["bathrooms_clean"].fillna(listings["bedrooms_clean"].median())
+        
         
         
 # gan co ngoai lai
