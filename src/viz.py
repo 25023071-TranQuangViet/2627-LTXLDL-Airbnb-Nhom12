@@ -332,12 +332,12 @@ def _ve_khieu_nai(c, cot, cot_dem, ma, ten_ngan, mo_ta, tt, moc, out, mo_phong):
 
 def ve_k7(c, tt, moc, out, mo_phong=False):
     """K7: % review chê tiếng ồn theo borough."""
-    _ve_khieu_nai(c, "noise_pct", "n_noise", "K7", "tieng_on_borough", "chê tiếng ồn", tt, moc, out, mo_phong)
+    _ve_khieu_nai(c, "noise_pct", "n_noise", "K6", "tieng_on_borough", "chê tiếng ồn", tt, moc, out, mo_phong)
 
 
 def ve_k8(c, tt, moc, out, mo_phong=False):
     """K8: % review nhắc tới vấn đề an toàn theo borough."""
-    _ve_khieu_nai(c, "safety_pct", "n_safety", "K8", "an_toan_borough", "nhắc tới an toàn", tt, moc, out, mo_phong)
+    _ve_khieu_nai(c, "safety_pct", "n_safety", "K7", "an_toan_borough", "nhắc tới an toàn", tt, moc, out, mo_phong)
 
 
 # ----------------------------------------------------------------------------- K9 / K10
@@ -416,10 +416,10 @@ def ve_k9_k10(df_k910: pd.DataFrame, tt: str, moc: list[str], out: Path):
     thang_max = thang_vn(plot_df["month_ym"].iloc[i_max])
     if (diffs < 0).any():
         thang_dao = thang_vn(plot_df.loc[diffs < 0, "month_ym"].iloc[0])
-        tieu_de = (f"K9–K10 · Private còn trống hơn Entire {n_duong}/{len(plot_df)} tháng, "
+        tieu_de = (f"K9 · Private còn trống hơn Entire {n_duong}/{len(plot_df)} tháng, "
                    f"chênh lớn nhất +{so(diffs[i_max], 1)} điểm ở T{thang_max}, đảo chiều từ T{thang_dao}")
     else:
-        tieu_de = (f"K9–K10 · Private còn trống hơn Entire {n_duong}/{len(plot_df)} tháng, "
+        tieu_de = (f"K9 · Private còn trống hơn Entire {n_duong}/{len(plot_df)} tháng, "
                    f"chênh lớn nhất +{so(diffs[i_max], 1)} điểm ở T{thang_max}")
     ax1.set_title(tieu_de, fontsize=10, loc="left")
 
@@ -463,8 +463,100 @@ def ve_k9_k10(df_k910: pd.DataFrame, tt: str, moc: list[str], out: Path):
         "Giới hạn: 'ngày trống' gồm cả ngày chủ nhà tự khóa lịch; loại phòng lấy theo mốc cuối nên không phản ánh listing đổi loại (nếu có).",
         y=-0.03,
     )
-    luu(fig, out, "K9_K10_availability_room_type")
+    luu(fig, out, "K9_availability_room_type")
 
+def ve_gia_trung_vi_loai_phong(df_rt: pd.DataFrame, tt: str, moc: list[str], tien_te: str, out: Path):
+    """Vẽ 2 biểu đồ cột ngang riêng biệt cho Entire home/apt và Private room so với trung vị toàn thành phố."""
+    cau_hinh_loai = [
+        {
+            "cot_gia": "trung_vi_en",
+            "cot_city": "city_median_en",
+            "ten_loai": "Entire home/apt",
+            "ten_file": "K8_gia_trung_vi_entire_home",
+        },
+        {
+            "cot_gia": "trung_vi_pri",
+            "cot_city": "city_median_pri",
+            "ten_loai": "Private room",
+            "ten_file": "K8_gia_trung_vi_private_room",
+        },
+    ]
+
+    for cfg in cau_hinh_loai:
+        cot_gia = cfg["cot_gia"]
+        cot_city = cfg["cot_city"]
+        ten_loai = cfg["ten_loai"]
+
+        # Loại bỏ các quận không có dữ liệu loại phòng này và sắp xếp tăng dần
+        r = df_rt.dropna(subset=[cot_gia]).sort_values(cot_gia, ascending=True).reset_index(drop=True)
+        if r.empty:
+            continue
+
+        # Lấy ngưỡng giá trung vị toàn thành phố
+        city_med = float(r[cot_city].iloc[0]) if cot_city in r.columns else float(r[cot_gia].median())
+        y = np.arange(len(r))
+
+        # Tô màu cam cho các quận có giá vượt ngưỡng trung vị toàn thành phố, màu xanh sáng cho các quận thấp hơn/bằng
+        mau_cot = [CAM if v > city_med else XANH_SANG for v in r[cot_gia]]
+
+        fig, ax = plt.subplots(figsize=(8.4, 7.2))
+        bars = ax.barh(y, r[cot_gia], height=0.68, color=mau_cot, edgecolor=INK, lw=0.3, zorder=3)
+
+        # Đường kẻ nét đứt thẳng đứng biểu diễn giá trung vị toàn thành phố
+        ax.axvline(city_med, color=INK, ls="--", lw=1.4, alpha=0.85, zorder=4)
+
+        # Ghi nhãn giá trị ở cuối mỗi thanh ngang
+        max_val = float(r[cot_gia].max())
+        for yi, v in zip(y, r[cot_gia]):
+            ax.text(v + max_val * 0.012, yi, f"{so(v, 0)}", va="center", fontsize=7.8, color=INK)
+
+        # Ghi chú thích trực tiếp cho đường ngưỡng thành phố ở phía trên cùng biểu đồ
+        ax.text(
+            city_med + max_val * 0.015,
+            len(r) - 0.35,
+            f"Trung vị {tt}: {so(city_med, 0)} {tien_te}",
+            color=INK,
+            fontsize=8.5,
+            fontweight="bold",
+            va="center",
+            bbox=dict(boxstyle="round,pad=0.25", facecolor="white", edgecolor=NET_DUT, alpha=0.9),
+            zorder=5,
+        )
+
+        ax.set_yticks(y)
+        ax.set_yticklabels(r["neighbour_hood"], fontsize=8.5)
+        ax.set_ylim(-0.7, len(r) + 0.3)
+        ax.set_xlim(0, max_val * 1.15)
+        ax.set_xlabel(f"Giá trung vị ({tien_te}/đêm) — Loại phòng: {ten_loai}", fontsize=9)
+
+        so_quan_vuot = int((r[cot_gia] > city_med).sum())
+        ax.set_title(
+            f"Giá trung vị {ten_loai} theo quận: {so_quan_vuot}/{len(r)} quận cao hơn ngưỡng {tt} ({so(city_med, 0)} {tien_te})",
+            fontsize=10,
+            loc="left",
+        )
+
+        ax.legend(
+            handles=[
+                Patch(facecolor=CAM, edgecolor=INK, lw=0.3, label=f"Cao hơn trung vị {tt} (> {so(city_med, 0)} {tien_te})"),
+                Patch(facecolor=XANH_SANG, edgecolor=INK, lw=0.3, label=f"Thấp hơn hoặc bằng trung vị {tt}"),
+            ],
+            loc="lower right",
+            fontsize=8,
+            frameon=True,
+            facecolor="white",
+            edgecolor="#E6E9EB",
+        )
+
+        ghi_nguon(
+            fig,
+            tt,
+            moc,
+            f"Phạm vi: {len(r)} quận có dữ liệu {ten_loai} ở mốc cuối {ngay(moc[-1])}; đường nét đứt = giá trung vị toàn {tt}.\n"
+            "Giới hạn: giá trung vị chỉ tính trên các listing hợp lệ sau QA ở mốc cuối, chưa phản ánh biến động theo mùa.",
+            y=0.02,
+        )
+        luu(fig, out, cfg["ten_file"])
 
 # ----------------------------------------------------------------------------- CHẠY CHÍNH
 def ve_tat_ca(config_path, proc=None, out=None, root=ROOT):
@@ -478,6 +570,7 @@ def ve_tat_ca(config_path, proc=None, out=None, root=ROOT):
     b = pd.read_csv(proc / "kpi_borough_value.csv")
     snap = pd.read_csv(proc / "kpi_snapshot.csv")
     thang = pd.read_csv(proc / "kpi_availability_month.csv")
+    
     snap["snapshot"] = snap["snapshot"].astype(str)
     thang["snapshot"] = thang["snapshot"].astype(str)
     moc = sorted(snap["snapshot"])
@@ -504,6 +597,13 @@ def ve_tat_ca(config_path, proc=None, out=None, root=ROOT):
         ve_k9_k10(df_k910, tt, moc, out)
     else:
         print("[VIZ] chưa có kpi_entire_availability.csv / kpi_private_availability.csv -> bỏ qua K9-K10")
+        
+    f_rt_med = proc / "kpi_room_type_median.csv"
+    if f_rt_med.exists():
+        df_rt = pd.read_csv(f_rt_med)
+        ve_gia_trung_vi_loai_phong(df_rt, tt, moc, tien_te, out)
+    else:
+        print("[VIZ] chưa có kpi_room_type_median.csv -> bỏ qua biểu đồ giá trung vị từng loại phòng")
 
 
 if __name__ == "__main__":

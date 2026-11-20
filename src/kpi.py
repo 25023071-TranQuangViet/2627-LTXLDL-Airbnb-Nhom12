@@ -135,6 +135,8 @@ def kpi_room_type(ls, moc_cuoi):    #K9 - K10
                                "ty_le_private": ty_le_private,
                                "trung_vi_en": trung_vi_en,
                                "trung_vi_pri": trung_vi_pri,
+                               "city_median_en": median_entire,
+                                "city_median_pri": median_private,
                                "chenh_lech_gia_loai_phong_trong_vung": lech_trong_vung,
                                "chi_so_gia_tuong_doi_cua_entire_so_voi_city": gia_tuong_doi_en,
                                "chi_so_gia_tuong_doi_cua_private_so_voi_city": gia_tuong_doi_pri})
