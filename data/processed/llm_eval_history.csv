@@ -1,0 +1,2 @@
+﻿thoi_gian,model,prompt_version,n_nhan_tay,llm_cam_xuc,llm_khia_canh_f1,llm_bi_che_f1,llm_on_bi_che_f1,llm_an_toan_bi_che_f1,llm_ngon_ngu
+2026-11-20T16:31:58,gemini-3.5-flash-lite,8b6b7293,100,0.98,0.893,0.848,0.8,,1.0

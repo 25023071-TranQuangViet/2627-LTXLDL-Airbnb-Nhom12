@@ -6,6 +6,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import yaml
 
 try:  # chạy "python src/evaluate.py" hoặc import dạng "src.evaluate" đều được
     from src.llm import doc_cau_hinh, tai_reviews_cleaned, ASPECTS, SENTIMENTS, PROMPT_VERSION
@@ -108,6 +109,11 @@ def liet_ke_loi(he, gold, text):
                                     "comments": text.get(ma, "")})            
     return pd.DataFrame(dong, columns=cot)
 
+def dem_review_thanh_pho(root, snap):
+    p = root / "data" / "raw" / snap / "reviews.csv.gz"
+    if not p.exists():
+        return None
+    return int(sum(len(c) for c in pd.read_csv(p, compression="gzip", usecols=[0], chunksize=500_000)))
 
 def uoc_tinh_chi_phi(cfg, ket_qua_llm, n_mau, n_tp):
     """Bài 11 mục 5: đo token trung bình mỗi review rồi nhân với số review định xử lý."""
@@ -129,8 +135,13 @@ def uoc_tinh_chi_phi(cfg, ket_qua_llm, n_mau, n_tp):
 # ----------------------------------------------------------------------------- CHẠY CHÍNH
 def run_evaluate(config_path, root=PROJECT_PATH, make_template=False):
     root = Path(root)
+    p_cfg = Path(config_path)
+    if not p_cfg.exists() and not p_cfg.is_absolute():
+        p_cfg = root / p_cfg
+    config = yaml.safe_load(p_cfg.read_text(encoding="utf-8"))
+    snapshots = config["snapshots"]
     cfg = doc_cau_hinh(config_path)
-    samples, proc, rep = root / "data" / "samples", root / "data" / "processed", root / "reports"
+    samples, proc = root / "data" / "samples", root / "data" / "processed"
 
     if make_template:
         rv = tai_reviews_cleaned(cfg, root)
@@ -167,16 +178,16 @@ def run_evaluate(config_path, root=PROJECT_PATH, make_template=False):
     bang = pd.DataFrame({ten: cot_diem(du, gold) for ten, du in he.items()})
     print(bang.round(2).to_string())
 
-    rep.mkdir(parents=True, exist_ok=True)
+    proc.mkdir(parents=True, exist_ok=True)
     dai = bang.reset_index(names="metric").melt(id_vars="metric", var_name="system", value_name="score")
     dai["n"] = len(gold)
-    dai.to_csv(rep / "llm_eval.csv", index=False, encoding="utf-8-sig")
+    dai.to_csv(proc / "llm_eval.csv", index=False, encoding="utf-8-sig")
 
     rv = tai_reviews_cleaned(cfg, root)
     text = rv.set_index("review_id")["comments_fixed"].str.slice(0, 400).to_dict()
     loi = liet_ke_loi(he, gold, text)
-    loi.to_csv(rep / "llm_error_analysis.csv", index=False, encoding="utf-8-sig")
-    print(f"[EVAL] {len(loi)} dòng lỗi -> reports/llm_error_analysis.csv")
+    loi.to_csv(proc / "llm_error_analysis.csv", index=False, encoding="utf-8-sig")
+    print(f"[EVAL] {len(loi)} dòng lỗi -> data/processed/llm_error_analysis.csv")
 
     if "llm" in he:
         kq = pd.read_csv(nguon["llm"], dtype={"review_id": str})
@@ -184,7 +195,7 @@ def run_evaluate(config_path, root=PROJECT_PATH, make_template=False):
         lich_su = {"thoi_gian": dt.datetime.now().isoformat(timespec="seconds"), "model": kq["model"].iloc[0],
                    "prompt_version": kq["prompt_version"].iloc[0], "n_nhan_tay": len(gold),
                    **{f"llm_{k}": (round(v, 3) if v == v else np.nan) for k, v in bang["llm"].items()}}
-        p_ls = rep / "llm_eval_history.csv"
+        p_ls = proc / "llm_eval_history.csv"
         cu = pd.read_csv(p_ls) if p_ls.exists() else pd.DataFrame()
         pd.concat([cu, pd.DataFrame([lich_su])], ignore_index=True).to_csv(p_ls, index=False, encoding="utf-8-sig")
 
@@ -192,11 +203,11 @@ def run_evaluate(config_path, root=PROJECT_PATH, make_template=False):
         hk = pd.DataFrame([{"quy_tac": c, "so_dong": int(kq[c].astype(str).str.lower().eq("true").sum()),
                             "ty_le_pct": round(float(kq[c].astype(str).str.lower().eq("true").mean() * 100), 2)}
                            for c in cac_co])
-        hk.to_csv(rep / "llm_hau_kiem.csv", index=False, encoding="utf-8-sig")
+        hk.to_csv(proc / "llm_hau_kiem.csv", index=False, encoding="utf-8-sig")
 
-        chi_phi = uoc_tinh_chi_phi(cfg, kq, len(kq), len(rv))
+        chi_phi = uoc_tinh_chi_phi(cfg, kq, len(kq), dem_review_thanh_pho(root, str(max(map(str, snapshots)))))
         if chi_phi is not None:
-            chi_phi.to_csv(rep / "llm_cost_estimate.csv", index=False, encoding="utf-8-sig")
+            chi_phi.to_csv(proc / "llm_cost_estimate.csv", index=False, encoding="utf-8-sig")
             print(chi_phi[["pham_vi", "so_review", "chi_phi_usd", "ngay_o_goi_mien_phi"]].to_string(index=False))
     return bang
 
