@@ -1,0 +1,13 @@
+﻿metric,system,score,n
+cam_xuc,baseline,0.9,100
+khia_canh_f1,baseline,0.852017937219731,100
+bi_che_f1,baseline,0.5185185185185185,100
+on_bi_che_f1,baseline,0.6666666666666666,100
+an_toan_bi_che_f1,baseline,,100
+ngon_ngu,baseline,0.98,100
+cam_xuc,llm,0.98,100
+khia_canh_f1,llm,0.8929219600725953,100
+bi_che_f1,llm,0.8484848484848485,100
+on_bi_che_f1,llm,0.8,100
+an_toan_bi_che_f1,llm,,100
+ngon_ngu,llm,1.0,100

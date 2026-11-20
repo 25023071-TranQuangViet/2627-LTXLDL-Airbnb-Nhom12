@@ -18,7 +18,6 @@ llm:
   price_input_per_m_usd: 0.30
   price_output_per_m_usd: 2.50
   aspects: ["location", "cleanliness", "host", "value", "noise", "amenities", "safety"]
-  input: data/processed/reviews_cleaned.csv
   cache: data/processed/llm_cache.jsonl
 
 seed: 42
