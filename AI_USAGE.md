@@ -1,4 +1,6 @@
-### Công cụ đã dùng: Claude Sonet 5.5, Gemini Flash
+### Công cụ đã dùng: 
+    - Claude Sonet 5.5
+    - Gemini Flash
 ### Công cụ được sử dụng vào việc:
     - Hỗ trợ sinh ra code gợi ý từ những ý tưởng, hướng xử lý của nhóm đã đề xuất ra
     - Hỗ trợ các thành viên trong nhóm làm quen và xử lý các lỗi thường gặp khi làm việc nhóm trên github
