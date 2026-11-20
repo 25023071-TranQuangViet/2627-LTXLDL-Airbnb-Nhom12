@@ -8,5 +8,5 @@ Lệnh chạy:
     Có chạy llm:
         python run_pipeline.py --config configs/London.yaml
     Không chạy llm:
-        python run_pipeline.py --config configs/.yaml --skip-llm
+        python run_pipeline.py --config configs/London.yaml --skip-llm
 Tên biến môi trường gọi API: GEMINI_API_KEY

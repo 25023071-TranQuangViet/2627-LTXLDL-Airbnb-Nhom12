@@ -34,6 +34,8 @@ INK = "#222222"
 NGUONG_NGAY = 0.95
 
 plt.rcParams.update({
+    "pdf.fonttype": 42,
+    "ps.fonttype": 42,
     "font.family": "DejaVu Sans",
     "axes.spines.top": False,
     "axes.spines.right": False,
