@@ -1,24 +1,3 @@
-# 2627-LTXLDL-Airbnb-Nhom12
-"""Đánh giá chất lượng và chi phí của LLM so với phương pháp đối chứng, theo Bài 11 mục 5.
-
-Chạy riêng:
-    python src/evaluate.py --config configs/London.yaml                   # chấm điểm
-    python src/evaluate.py --config configs/London.yaml --make-template   # tạo tệp mẫu + hướng dẫn gán nhãn tay
-
-Bộ nhãn tay đóng vai trò bộ dữ liệu kiểm thử: không có nó, nhận xét về chất lượng chỉ là cảm nhận.
-Tệp data/samples/hand_labels.csv (>= 100 dòng), mỗi dòng một review, các danh sách nối bằng "|":
-    review_id | sentiment (positive/mixed/negative) | aspects_positive | aspects_negative | language (ISO 639-1, "und")
-
-Điểm (Bài 11): cảm xúc, ngôn ngữ = tỷ lệ đúng (accuracy); khía cạnh = F1 (cộng số nhãn đúng, thừa, thiếu của cả
-bộ rồi mới tính), tập khía cạnh gộp khen + chê, có thêm F1 riêng cho khía cạnh bị chê. Thêm cho Nhóm C: F1 phát hiện
-"chê ồn" và "chê an toàn". Đối chứng không biết khen hay chê nên không có điểm "bị chê" chung (NaN), như Bài 11.
-
-Đầu ra: reports/llm_eval.csv            điểm của baseline và LLM (dạng dài: metric, system, score, n)
-        reports/llm_eval_history.csv    mỗi lần chấm một dòng: mô hình, phiên bản prompt, điểm (để so khi sửa prompt)
-        reports/llm_error_analysis.csv  từng review sai: trường, dự đoán, nhãn tay, thừa, thiếu, nội dung
-        reports/llm_hau_kiem.csv        số dòng LLM bị cờ bởi các quy tắc hậu kiểm
-        reports/llm_cost_estimate.csv   chi phí theo token và số ngày ở gói miễn phí
-"""
 from __future__ import annotations
 
 import argparse
@@ -39,6 +18,8 @@ except ImportError:
 CAC_DIEM = {"cam_xuc": "accuracy cảm xúc", "khia_canh_f1": "F1 khía cạnh (khen + chê)",
             "bi_che_f1": "F1 khía cạnh bị chê", "on_bi_che_f1": "F1 phát hiện chê ồn",
             "an_toan_bi_che_f1": "F1 phát hiện chê an toàn", "ngon_ngu": "accuracy ngôn ngữ"}
+
+COT_NHAN_TAY = {"review_id", "sentiment", "aspects_pos", "aspects_neg", "language"}
 
 
 # ----------------------------------------------------------------------------- hàm chấm điểm (Bài 11 mục 5)
@@ -65,7 +46,7 @@ def tach(s):
 def doc_nhan_tay(p):
     """Đọc và KIỂM TRA bộ nhãn tay: sai danh mục thì dừng và nói rõ."""
     d = pd.read_csv(p, dtype=str, keep_default_na=False)
-    kiem_cau_truc(d, {"review_id", "sentiment", "aspects_positive", "aspects_negative", "language"}, set(), p.name)
+    kiem_cau_truc(d, COT_NHAN_TAY, set(), p.name)
     d = d.drop_duplicates("review_id")
     d["sentiment"] = d["sentiment"].str.strip().str.lower()
     loi = sorted(set(d["sentiment"]) - set(SENTIMENTS))
@@ -73,11 +54,11 @@ def doc_nhan_tay(p):
         raise ValueError(f"{p.name}: sentiment chỉ nhận {SENTIMENTS}; thấy giá trị lạ/rỗng: {loi}")
     gold = {}
     for r in d.itertuples():
-        pos, neg = tach(r.aspects_positive), tach(r.aspects_negative)
+        pos, neg = tach(r.aspects_pos), tach(r.aspects_neg)
         la = sorted((set(pos) | set(neg)) - set(ASPECTS))
         if la:
             raise ValueError(f"{p.name}: review {r.review_id} có khía cạnh ngoài danh mục {ASPECTS}: {la}")
-        gold[r.review_id] = {"sentiment": r.sentiment, "aspects_positive": pos, "aspects_negative": neg,
+        gold[r.review_id] = {"sentiment": r.sentiment, "aspects_pos": pos, "aspects_neg": neg,
                              "language": r.language.strip().lower() or "und",
                              "aspects": pos + neg,
                              "noise_neg": [a for a in neg if a == "noise"],
@@ -85,30 +66,31 @@ def doc_nhan_tay(p):
     return gold
 
 
-def doc_du_doan(p, ids, co_khen_che):
+def doc_du_doan(p, ids):
     """CSV kết quả -> {trường: {mã review: giá trị}} cho các review trong ids (cùng dạng với nhãn tay)."""
     d = pd.read_csv(p, dtype={"review_id": str}, keep_default_na=False).drop_duplicates("review_id")
     d = d[d["review_id"].isin(ids)].set_index("review_id")
-    pos = {m: set(tach(v)) for m, v in d["aspects_positive"].items()}
-    neg = {m: set(tach(v)) for m, v in d["aspects_negative"].items()}
-    du = {"sentiment": d["sentiment"].to_dict(), "language": d["language"].str.lower().to_dict(),
+    pos = {m: set(tach(v)) for m, v in d["aspects_pos"].items()}
+    neg = {m: set(tach(v)) for m, v in d["aspects_neg"].items()}
+    du = {"sentiment": d["sentiment"].str.strip().str.lower().to_dict(),
+          "language": d["language"].str.strip().str.lower().replace("", "und").to_dict(),
           "aspects": {m: pos[m] | neg[m] for m in d.index},
+          "aspects_pos": pos, "aspects_neg": neg,
           "noise_neg": {m: {a for a in neg[m] if a == "noise"} for m in d.index},
           "safety_neg": {m: {a for a in neg[m] if a == "safety"} for m in d.index}}
-    if co_khen_che:                      # đối chứng không biết khen hay chê: không có "aspects_negative" chung
-        du["aspects_negative"] = neg
     return du
 
 
 def cot_diem(du, gold):
-    che = f1(du, gold, "aspects_negative") if "aspects_negative" in du else np.nan
-    return {"cam_xuc": ti_le_dung(du, gold, "sentiment"), "khia_canh_f1": f1(du, gold, "aspects"), "bi_che_f1": che,
+    return {"cam_xuc": ti_le_dung(du, gold, "sentiment"), "khia_canh_f1": f1(du, gold, "aspects"), 
+            "bi_che_f1": f1(du, gold, "aspects_neg"),
             "on_bi_che_f1": f1(du, gold, "noise_neg"), "an_toan_bi_che_f1": f1(du, gold, "safety_neg"),
             "ngon_ngu": ti_le_dung(du, gold, "language")}
 
 
 def liet_ke_loi(he, gold, text):
     """Từng review sai (Bài 11 'LLM sai ở đâu?'): trường, dự đoán, nhãn tay, thừa, thiếu."""
+    cot = ["system", "review_id", "truong", "du_doan", "nhan_tay", "thua", "thieu", "comments"]
     dong = []
     for ten, du in he.items():
         for ma, g in gold.items():
@@ -117,30 +99,14 @@ def liet_ke_loi(he, gold, text):
                 if doan != g[truong]:
                     dong.append({"system": ten, "review_id": ma, "truong": truong, "du_doan": doan,
                                  "nhan_tay": g[truong], "thua": "", "thieu": "", "comments": text.get(ma, "")})
-            for truong in ("aspects_positive", "aspects_negative"):
-                if truong not in du and truong == "aspects_negative":
-                    continue
-                if truong == "aspects_positive":     # khen = khía cạnh dự đoán trừ phần bị chê (đối chứng không có mục này)
-                    continue
+            for truong in ("aspects_pos", "aspects_neg", "aspects"):
                 doan, nhan = set(du[truong].get(ma, set())), set(g[truong])
                 if doan != nhan:
-                    dong.append({"system": ten, "review_id": ma, "truong": truong, "du_doan": "|".join(sorted(doan)),
-                                 "nhan_tay": "|".join(sorted(nhan)), "thua": "|".join(sorted(doan - nhan)),
-                                 "thieu": "|".join(sorted(nhan - doan)), "comments": text.get(ma, "")})
-            doan, nhan = set(du["aspects"].get(ma, set())), set(g["aspects"])
-            if doan != nhan:
-                dong.append({"system": ten, "review_id": ma, "truong": "aspects", "du_doan": "|".join(sorted(doan)),
-                             "nhan_tay": "|".join(sorted(nhan)), "thua": "|".join(sorted(doan - nhan)),
-                             "thieu": "|".join(sorted(nhan - doan)), "comments": text.get(ma, "")})
-    return pd.DataFrame(dong, columns=["system", "review_id", "truong", "du_doan", "nhan_tay", "thua", "thieu", "comments"])
-
-
-# def dem_review_thanh_pho(root):
-#     p = root / "data" / "processed" / "reviews_cleaned.csv"
-#     if not p.exists():
-#         return None
-#     rv =
-#     return int(sum(len(c) for c in pd.read_csv(p, compression="gzip", usecols=[0], chunksize=500_000)))
+                    dong.append({"system": ten, "review_id": ma, "truong": truong,
+                                    "du_doan": "|".join(sorted(doan)), "nhan_tay": "|".join(sorted(nhan)),
+                                    "thua": "|".join(sorted(doan - nhan)), "thieu": "|".join(sorted(nhan - doan)),
+                                    "comments": text.get(ma, "")})            
+    return pd.DataFrame(dong, columns=cot)
 
 
 def uoc_tinh_chi_phi(cfg, ket_qua_llm, n_mau, n_tp):
@@ -160,30 +126,16 @@ def uoc_tinh_chi_phi(cfg, ket_qua_llm, n_mau, n_tp):
                      "gia_vao_usd_moi_trieu": g_vao, "gia_ra_usd_moi_trieu": g_ra, "model": cfg["model"]})
     return pd.DataFrame(dong)
 
-
-# def do_dong_thuan(gold_a, gold_b):
-#     """Hai người gán độc lập (Bài 11): tỷ lệ hai người giống nhau ở từng trường."""
-#     chung = sorted(set(gold_a) & set(gold_b))
-#     if not chung:
-#         return None
-#     kh = lambda g, m, t: sorted(g[m][t]) if isinstance(g[m][t], list) else g[m][t]
-#     return pd.DataFrame([{"truong": t, "n": len(chung),
-#                           "ty_le_giong_nhau": round(float(np.mean([kh(gold_a, m, t) == kh(gold_b, m, t) for m in chung])), 3)}
-#                          for t in ("sentiment", "aspects_positive", "aspects_negative", "language")])
-
-
 # ----------------------------------------------------------------------------- CHẠY CHÍNH
 def run_evaluate(config_path, root=PROJECT_PATH, make_template=False):
     root = Path(root)
     cfg = doc_cau_hinh(config_path)
-    #import yaml
-    #ecfg = yaml.safe_load(Path(config_path).read_text(encoding="utf-8")).get("evaluate", {}) or {}
     samples, proc, rep = root / "data" / "samples", root / "data" / "processed", root / "reports"
 
     if make_template:
         rv = tai_reviews_cleaned(cfg, root)
         mau = rv.loc[(rv["flag_human"]) & (~rv["flag_id_duplicates"]), ["review_id", "comments_fixed"]]
-        for cot in ("sentiment", "aspects_positive", "aspects_negative", "language"):
+        for cot in ("sentiment", "aspects_pos", "aspects_neg", "language"):
             mau[cot] = ""
         samples.mkdir(parents=True, exist_ok=True)
         mau.to_csv(samples / "hand_labels_template.csv", index=False, encoding="utf-8-sig")
@@ -196,19 +148,10 @@ def run_evaluate(config_path, root=PROJECT_PATH, make_template=False):
         print(f"[EVAL] CHƯA CHẤM: không thấy nhãn tay tại {p_gold} (chạy --make-template rồi gán nhãn)")
         return None
     gold = doc_nhan_tay(p_gold)
-    # if len(gold) < 100:
-    #     print(f"[EVAL] CẢNH BÁO: chỉ có {len(gold)} nhãn tay, đề bài yêu cầu >= 100")
-    # p_gold2 = samples / "hand_labels_2.csv"
-    # if p_gold2.exists():
-    #     dt_ = do_dong_thuan(gold, doc_nhan_tay(p_gold2))
-    #     if dt_ is not None:
-    #         rep.mkdir(parents=True, exist_ok=True)
-    #         dt_.to_csv(rep / "gan_nhan_dong_thuan.csv", index=False, encoding="utf-8-sig")
-    #         print("[EVAL] mức đồng thuận hai người gán:\n" + dt_.to_string(index=False))
 
-    nguon = {"baseline": (proc / "baseline_results.csv", False), "llm": (proc / "llm_results.csv", True)}
+    nguon = {"baseline": proc / "baseline_results.csv", "llm": proc / "llm_results.csv"}
     ids = set(gold)
-    for ten, (p, _) in list(nguon.items()):
+    for ten, p in list(nguon.items()):
         if not p.exists():
             print(f"[EVAL] thiếu {p.name}: bỏ qua hệ thống {ten}")
             del nguon[ten]
@@ -220,7 +163,7 @@ def run_evaluate(config_path, root=PROJECT_PATH, make_template=False):
     gold = {m: g for m, g in gold.items() if m in ids}
     print(f"[EVAL] chấm trên {len(gold)} review có nhãn tay và có dự đoán của {' & '.join(nguon)}")
 
-    he = {ten: doc_du_doan(p, ids, kc) for ten, (p, kc) in nguon.items()}
+    he = {ten: doc_du_doan(p, ids) for ten, p in nguon.items()}
     bang = pd.DataFrame({ten: cot_diem(du, gold) for ten, du in he.items()})
     print(bang.round(2).to_string())
 
@@ -236,7 +179,7 @@ def run_evaluate(config_path, root=PROJECT_PATH, make_template=False):
     print(f"[EVAL] {len(loi)} dòng lỗi -> reports/llm_error_analysis.csv")
 
     if "llm" in he:
-        kq = pd.read_csv(nguon["llm"][0], dtype={"review_id": str})
+        kq = pd.read_csv(nguon["llm"], dtype={"review_id": str})
         # Lịch sử: mỗi lần chấm một dòng (mô hình, phiên bản prompt, điểm) để so khi sửa prompt
         lich_su = {"thoi_gian": dt.datetime.now().isoformat(timespec="seconds"), "model": kq["model"].iloc[0],
                    "prompt_version": kq["prompt_version"].iloc[0], "n_nhan_tay": len(gold),
