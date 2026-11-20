@@ -14,7 +14,7 @@ review_id,listing_id,sentiment,language,aspects_pos,aspects_neg,noise_neg,safety
 28979186,2354700,positive,en,,,0,0,baseline-lexicon
 30829849,390356,positive,en,host|location|noise,,0,0,baseline-lexicon
 31376073,390356,positive,en,amenities|host|safety,,0,0,baseline-lexicon
-32219650,4563023,positive,und,amenities|value,,0,0,baseline-lexicon
+32219650,4563023,mixed,und,amenities|value,,0,0,baseline-lexicon
 35388331,1548874,positive,en,,,0,0,baseline-lexicon
 37123011,852486,positive,en,location,,0,0,baseline-lexicon
 37580257,3482302,positive,en,cleanliness|location|noise,,0,0,baseline-lexicon
@@ -142,7 +142,7 @@ review_id,listing_id,sentiment,language,aspects_pos,aspects_neg,noise_neg,safety
 444106025,22081628,positive,en,location|noise|safety,,0,0,baseline-lexicon
 444736569,29296471,positive,en,cleanliness,,0,0,baseline-lexicon
 446787639,18338833,positive,en,location,,0,0,baseline-lexicon
-451704981,29486580,positive,en,,,0,0,baseline-lexicon
+451704981,29486580,mixed,en,,,0,0,baseline-lexicon
 457152289,30690635,positive,en,,,0,0,baseline-lexicon
 458705949,8282811,positive,en,location,,0,0,baseline-lexicon
 458713110,24956323,positive,en,cleanliness,,0,0,baseline-lexicon
@@ -482,7 +482,7 @@ review_id,listing_id,sentiment,language,aspects_pos,aspects_neg,noise_neg,safety
 954192821212851805,19076472,positive,en,location|noise,,0,0,baseline-lexicon
 957117899620944569,852486,positive,en,cleanliness|host,,0,0,baseline-lexicon
 957145631979426126,737636611369304699,negative,en,,location|noise,1,0,baseline-lexicon
-957181817985229474,38773849,mixed,en,host|noise,amenities,0,0,baseline-lexicon
+957181817985229474,38773849,positive,en,amenities|host|noise,,0,0,baseline-lexicon
 961458594631915800,17332069,mixed,en,location,noise,1,0,baseline-lexicon
 962963596534035974,49372948,positive,en,cleanliness,,0,0,baseline-lexicon
 965049594366889359,822183486779496979,mixed,en,,noise,1,0,baseline-lexicon
@@ -563,7 +563,7 @@ review_id,listing_id,sentiment,language,aspects_pos,aspects_neg,noise_neg,safety
 1062300511197394509,999843426797270906,positive,en,host|location|noise,,0,0,baseline-lexicon
 1067272419067896063,18893469,positive,en,amenities|cleanliness|location|noise|value,,0,0,baseline-lexicon
 1068734681233087241,40797001,positive,en,cleanliness,,0,0,baseline-lexicon
-1069513795018490877,792725580032566202,positive,en,host|location,,0,0,baseline-lexicon
+1069513795018490877,792725580032566202,mixed,en,host|location,,0,0,baseline-lexicon
 1073099538575759181,873023604923504824,positive,en,,noise,1,0,baseline-lexicon
 1073828134885947901,935982997275140109,mixed,en,amenities|cleanliness,,0,0,baseline-lexicon
 1084660504964111280,971794059225991798,positive,en,,,0,0,baseline-lexicon
@@ -628,7 +628,7 @@ review_id,listing_id,sentiment,language,aspects_pos,aspects_neg,noise_neg,safety
 1158654752935623496,591080805694576052,positive,en,location,,0,0,baseline-lexicon
 1159336310300361403,6624911,positive,en,location|noise,,0,0,baseline-lexicon
 1160043393521662308,591907885624654280,positive,en,,,0,0,baseline-lexicon
-1161464616962699631,766496077393244250,mixed,en,cleanliness|location|value,safety,0,1,baseline-lexicon
+1161464616962699631,766496077393244250,positive,en,cleanliness|location|safety|value,,0,0,baseline-lexicon
 1162288821890617444,1076691846458471289,mixed,en,host|noise,cleanliness,0,0,baseline-lexicon
 1163002172790784111,1076732221173477995,positive,en,host|noise,,0,0,baseline-lexicon
 1163015195016491538,591907885624654280,positive,en,host,,0,0,baseline-lexicon
@@ -680,7 +680,7 @@ review_id,listing_id,sentiment,language,aspects_pos,aspects_neg,noise_neg,safety
 1205697769150259763,1190281511553003051,positive,en,,,0,0,baseline-lexicon
 1207171603534968723,1104449922390792141,positive,en,amenities|cleanliness,,0,0,baseline-lexicon
 1207219403346864646,16961544,positive,en,,,0,0,baseline-lexicon
-1208679515883638168,35430972,mixed,en,,location,0,0,baseline-lexicon
+1208679515883638168,35430972,positive,en,location,,0,0,baseline-lexicon
 1210072978031393927,17332069,positive,en,location,,0,0,baseline-lexicon
 1210845898616247293,971794059225991798,mixed,en,,location|noise,1,0,baseline-lexicon
 1212246925225756898,29296471,positive,en,host|location,,0,0,baseline-lexicon

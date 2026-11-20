@@ -61,7 +61,7 @@ def ghi_nguon(fig, thanh_pho, cac_moc, dong_them, y=0.0):
 
 def luu(fig, thu_muc, ten):
     thu_muc.mkdir(parents=True, exist_ok=True)
-    p = thu_muc / f"{ten}.png"
+    p = thu_muc / f"{ten}.pdf"
     fig.savefig(p, dpi=170, bbox_inches="tight")
     plt.close(fig)
     print(f"[VIZ] đã lưu {p}")
