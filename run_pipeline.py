@@ -16,7 +16,7 @@ def run_pipeline(config_path, skip_llm = False, llm_limit = None):
     
     run_baseline(config_path)
     
-    run_llm(config_path, skip_llm)
+    run_llm(config_path, skip_llm = skip_llm)
     
     run_evaluate(config_path)
     
