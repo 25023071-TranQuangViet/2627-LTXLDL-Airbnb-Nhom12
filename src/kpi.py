@@ -141,12 +141,12 @@ def kpi_room_type(ls, moc_cuoi):    #K9 - K10
     
     p_cal = ROOT / "data" / "processed" / "calendar_cleaned.csv"
     calendar = pd.read_csv(p_cal, usecols=["listing_id", "date", "available", "flag_date_missing",
-                                            "flag_available_missing", "flag_duplicated", "flag_not_in_snapshot"])
+                                            "flag_available_missing", "flag_duplicated", "flag_not_in_snapshot"], dtype = {"listing_id": "str"})
     calendar["trung_ngay_in_moc"] = calendar.duplicated(subset = ["listing_id", "date"], keep = "last")
     cal = calendar[~calendar["trung_ngay_in_moc"]]
     cal["date"] = pd.to_datetime(cal["date"], errors="coerce")
     cal["date_thang"] = cal["date"].dt.strftime("%Y-%m")
-    ls_room = ls.loc[(ls["room_type"].notna()), ["listing_id", "room_type"]]
+    ls_room = (ls.loc[(ls["snapshot"] == moc_cuoi) & ls["id"].notna() & ls["room_type"].notna(), ["id", "room_type"]].drop_duplicates("id").rename(columns={"id": "listing_id"}))
     cal_room_type = cal.merge(ls_room, on = "listing_id", how = "inner")
     cal_entire = cal_room_type[cal_room_type["room_type"] == "Entire home/apt"]
     cal_private = cal_room_type[cal_room_type["room_type"] == "Private room"]

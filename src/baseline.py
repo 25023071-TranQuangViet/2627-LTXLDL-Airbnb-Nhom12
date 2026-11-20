@@ -64,11 +64,11 @@ def dem_khen_che(tokens, khen, che):
 def doan_ngon_ngu(text):
     chu = [ch for ch in str(text) if ch.isalpha()]
     if chu and sum(ord(ch) > 0x024F for ch in chu) / len(chu) > 0.3:
-        return "other"
+        return "und"
     tokens = TOKEN.findall(str(text).lower())
     diem = {ng: sum(w in sw for w in tokens) for ng, sw in STOP.items()}
     ng, d = max(diem.items(), key=lambda kv: kv[1])
-    return ng if d >= 2 else "other"
+    return ng if d >= 2 else "und"
 
 
 def du_doan(text, aspects):
