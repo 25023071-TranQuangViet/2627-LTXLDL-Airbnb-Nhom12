@@ -184,8 +184,8 @@ def dinh_nghia(tien_te, min_reviews):
         ("K5", "Độ sẵn sàng theo tháng", "Biết lúc nào còn nhiều chỗ trống", "số ngày available = t / tổng số ngày hợp lệ, theo (mốc, tháng)", "%", "kpi_availability_month.csv"),
         ("K6", "Tỷ lệ review chê tiếng ồn theo borough", "Cảnh báo borough hay bị phàn nàn về ồn", "số review có khía cạnh 'độ ồn' bị chê / số review đã gán nhãn LLM", "%", "kpi_complaints_borough.csv"),
         ("K7", "Tỷ lệ review chê an toàn theo borough", "Cảnh báo borough hay bị phàn nàn về an toàn", "số review có khía cạnh 'an toàn' bị chê / số review đã gán nhãn LLM", "%", "kpi_complaints_borough.csv"),
-        ("K8", "Tỷ lệ Entire home/apt và Private room trên mỗi khu vực và giá trung vị của mỗi loại phòng trong khu vực đó", "Xem loại phòng nào chiếm tỷ lệ nhiều hơn và có giá tốt hơn trong khu vực", "groupby neighbourhood_cleansed, mean(roomtype), median(roomtype)", "%, GBP", "kpi_room_type.csv"),
-        ("K9", "Độ chênh lệch giá trung vị của từng loại phòng theo từng khu vực với giá trung vị theo cả thành phố", "Xem giá các loại phòng của khu vực có cao hơn so với mặt bằng chung của toàn thành phố không", "median(roomtype_neighbourhood) / median(roomtype_city)", "%", "kpi_room_type.csv")
+        ("K8", "Tỷ lệ Entire home/apt và Private room trên mỗi khu vực và giá trung vị của mỗi loại phòng trong khu vực đó", "Xem loại phòng nào chiếm tỷ lệ nhiều hơn và có giá tốt hơn trong khu vực", "groupby neighbourhood_cleansed, mean(roomtype), median(roomtype)", "%, GBP", "kpi_room_type_median.csv"),
+        ("K9", "Độ sẵn sàng của mỗi loại phòng theo tháng", "Xem mỗi loại phòng được trống nhiều nhất vào những thời điểm nào", "Gộp theo tháng và tính available.mean()", "%", "kpi_entire_availability.csv, kpi_private_availability.csv")
     ], columns=["kpi_id", "kpi_name", "target", "formula", "unit", "output_file"])
 
 
