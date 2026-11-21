@@ -17,4 +17,9 @@
 - Không chạy llm:
 ```python run_pipeline.py --config configs/London.yaml --skip-llm```
 
-**Tên biến môi trường gọi API**: `GEMINI_API_KEY`
+## Cài khóa API (chỉ cần khi chạy LLM)
+
+Pipeline gọi Gemini qua biến môi trường `GEMINI_API_KEY`.
+
+- Windows (PowerShell): `$env:GEMINI_API_KEY="khoa-cua-ban"`
+- Linux / macOS: `export GEMINI_API_KEY="khoa-cua-ban"`
