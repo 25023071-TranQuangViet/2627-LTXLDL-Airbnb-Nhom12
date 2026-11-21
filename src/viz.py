@@ -183,56 +183,6 @@ def ve_k3(b, tt, moc, tien_te, out):
     luu(fig, out, "K3_quadrant")
 
 
-# ----------------------------------------------------------------------------- K4
-def ve_k4(snap, tt, moc, out):
-    """K4: 2 khung ngang (1x2): trái = % listing chưa có review (cột từ 0), phải = đường rating TB."""
-    n_ls = snap["n_listing"].to_numpy()
-    if "n_no_reviews" in snap.columns:
-        n_no = snap["n_no_reviews"].to_numpy()
-    else:
-        n_no = np.round(n_ls * snap["pct_no_reviews"].to_numpy() / 100).astype(int)
-    pct_no = n_no / n_ls * 100.0
-    rt = snap["rating_mean"].to_numpy()
-
-    x = np.arange(len(snap))
-    nhan = [ngay(s) for s in snap["snapshot"]]
-    mau_cot = [XAM_SANG] * (len(x) - 1) + [CAM]
-
-    fig, (a_trai, a_phai) = plt.subplots(1, 2, figsize=(10.4, 4.4))
-    fig.suptitle(f"K4 · Chất lượng dữ liệu đánh giá qua {len(snap)} mốc, n = {int(n_ls[0]):,} listing cố định"
-                 .replace(",", "."), x=0.01, y=1.02, ha="left", fontsize=11.5, fontweight="bold")
-
-    bars = a_trai.bar(x, pct_no, color=mau_cot, width=0.52)
-    for idx, bar in enumerate(bars):
-        h = bar.get_height()
-        a_trai.text(bar.get_x() + bar.get_width() / 2, h + 0.12,
-                    f"{so(pct_no[idx], 1)}%\n({int(n_no[idx])} listing)",
-                    ha="center", va="bottom", fontsize=8)
-    a_trai.set_ylim(0, max(float(pct_no.max()) * 1.25, 1.0))
-    a_trai.set_xticks(x)
-    a_trai.set_xticklabels(nhan, fontsize=8.5)
-    a_trai.set_ylabel("% listing chưa có review (trục từ 0)", fontsize=8.5)
-    a_trai.set_title(f"Listing chưa có review giảm từ {so(pct_no[0], 1)}% xuống {so(pct_no[-1], 1)}%",
-                     loc="left", fontsize=10)
-
-    a_phai.plot(x, rt, marker="o", color=XAM_SANG, lw=2.2, markersize=6)
-    a_phai.scatter(x[-1], rt[-1], marker="o", color=CAM, s=68, zorder=4, edgecolor=INK, lw=0.4)
-    for i in x:
-        a_phai.annotate(so(rt[i], 3), (i, rt[i]), xytext=(0, 8),
-                        textcoords="offset points", ha="center", fontsize=8.5)
-    a_phai.set_ylim(min(float(rt.min()) - 0.02, 4.60), max(float(rt.max()) + 0.03, 4.75))
-    a_phai.set_xticks(x)
-    a_phai.set_xticklabels(nhan, fontsize=8.5)
-    a_phai.set_ylabel("Rating TB (thang 0–5; trục cắt)", fontsize=8.5)
-    a_phai.set_title(f"Rating TB giảm nhẹ {so(abs(rt[-1] - rt[0]), 3)} điểm ({so(rt[0], 3)} → {so(rt[-1], 3)})",
-                     loc="left", fontsize=10)
-
-    ghi_nguon(fig, tt, moc,
-              f"Giới hạn: trục rating bị cắt nên độ dốc nhìn lớn hơn thực tế; thay đổi {so(abs(rt[-1] - rt[0]), 3)} điểm là rất nhỏ. "
-              f"Đây là cùng {int(n_ls[0]):,} listing ở cả {len(snap)} mốc.".replace(",", "."),
-              y=-0.04)
-    luu(fig, out, "K4_snapshot")
-
 
 # ----------------------------------------------------------------------------- K5
 def ve_k5(thang, snap, tt, moc, out):
@@ -578,7 +528,6 @@ def ve_tat_ca(config_path, proc=None, out=None, root=ROOT):
     ve_k1(b, tt, moc, tien_te, out)
     ve_k2(b, tt, moc, out)
     ve_k3(b, tt, moc, tien_te, out)
-    ve_k4(snap, tt, moc, out)
     ve_k5(thang, snap, tt, moc, out)
 
     # K7-K8: dùng kết quả LLM nếu đã có; nếu chưa có thì vẽ bản minh họa có watermark

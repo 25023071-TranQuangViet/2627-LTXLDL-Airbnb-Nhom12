@@ -609,7 +609,7 @@ def process_reviews(config_path, root: Path = PROJECT_PATH):
         df["flag_id_duplicates"] = df.duplicated(subset=['review_id', 'date'], keep='first')
         
         # Báo cáo QA:
-        use = ~(df["flag_empty_comment"] | df["flag_not_in_snapshot"])
+        use = ~(df["flag_empty_comment"] | df["flag_short_comment"] | df["flag_not_in_snapshot"])
         df["usable_for_llm"] = use
         con_lai = df[~df["flag_not_in_snapshot"]]
         qa_rules = [
