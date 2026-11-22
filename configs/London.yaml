@@ -10,14 +10,15 @@ qa:
 
 llm:
   provider: gemini
-  model: gemini-3.5-flash-lite               # model tuỳ chọn
+  model: gemini-3.5-flash-lite              
   api_key_env: GEMINI_API_KEY
-  sample_size: 1000               # nhóm giải thích cỡ mẫu
+  sample_size: 1000              
   requests_per_minute: 15        
   max_calls_per_run: 500
   price_input_per_m_usd: 0.30
   price_output_per_m_usd: 2.50
   aspects: ["location", "cleanliness", "host", "value", "noise", "amenities", "safety"]
-  cache: data/processed/llm_cache.jsonl
+  input: data/processed/reviews_cleaned.csv
+  cache: data/processed/llm_cache.json
 
 seed: 42
